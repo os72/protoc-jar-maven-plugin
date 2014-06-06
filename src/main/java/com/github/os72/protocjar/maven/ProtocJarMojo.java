@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.protocjar.maven;
+package com.github.os72.protocjar.maven;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -30,7 +30,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.FileUtils;
 import org.sonatype.plexus.build.incremental.BuildContext;
-import org.protocjar.Protoc;
+
+import com.github.os72.protocjar.Protoc;
 
 /**
  * @goal run

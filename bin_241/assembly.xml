@@ -15,8 +15,8 @@
       <unpack>true</unpack>
       <scope>runtime</scope>
       <includes>
-        <include>org.protocjar:protoc-jar</include>
-        <include>org.protocjar:protoc-jar-maven-plugin</include>
+        <include>com.github.os72:protoc-jar</include>
+        <include>com.github.os72:protoc-jar-maven-plugin</include>
       </includes>
     </dependencySet>
   </dependencySets>
