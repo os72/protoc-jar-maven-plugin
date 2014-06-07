@@ -7,6 +7,35 @@
   <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>protoc-jar-maven-plugin-build</name>
+  <url>https://github.com/os72/protoc-jar-maven-plugin</url>
+  <description>Protocol Buffers codegen plugin - based on protoc-jar executable JAR</description>
+
+  <parent>
+	<groupId>org.sonatype.oss</groupId>
+	<artifactId>oss-parent</artifactId>
+	<version>9</version>
+  </parent>
+
+  <licenses>
+	<license>
+	  <name>The Apache Software License, Version 2.0</name>
+	  <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+	  <distribution>repo</distribution>
+	</license>
+  </licenses>
+
+  <developers>
+	<developer>
+	  <id>os72</id>
+	  <name>Oliver Suciu</name>
+	</developer>
+  </developers>
+
+  <scm>
+	<connection>scm:git:git@github.com:os72/protoc-jar-maven-plugin.git</connection>
+	<developerConnection>scm:git:git@github.com:os72/protoc-jar-maven-plugin.git</developerConnection>
+	<url>git@github.com:os72/protoc-jar-maven-plugin.git</url>
+  </scm>
 
   <modules>
     <module>bin_241</module>
@@ -17,7 +46,7 @@
 	<dependency>
 	  <groupId>com.github.os72</groupId>
 	  <artifactId>protoc-jar</artifactId>
-	  <version>2.4.1.0-SNAPSHOT</version> <!-- overriden in bin_241, bin_250 -->
+	  <version>2.4.1.0</version> <!-- overriden in bin_241, bin_250 -->
 	</dependency>
 
 	<dependency>
