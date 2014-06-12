@@ -5,7 +5,7 @@
   <groupId>com.github.os72</groupId>
   <artifactId>protoc-jar-maven-plugin-build</artifactId>
   <packaging>pom</packaging>
-  <version>1.1</version>
+  <version>1.2-SNAPSHOT</version>
   <name>protoc-jar-maven-plugin-build</name>
   <url>https://github.com/os72/protoc-jar-maven-plugin</url>
   <description>Protocol Buffers codegen plugin - based on protoc-jar executable JAR</description>
