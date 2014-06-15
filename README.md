@@ -9,7 +9,14 @@ Based on
 * https://github.com/os72/protoc-jar
 * https://github.com/igor-petruk/protobuf-maven-plugin
 
+Branches
+* https://github.com/os72/protoc-jar-maven-plugin (master - protobuf 2.5.0)
+* https://github.com/os72/protoc-jar-maven-plugin/tree/protobuf_241 (protobuf 2.4.1)
+
 #### Usage
+
+Documentation: http://os72.github.io/protoc-jar-maven-plugin/
+
 ```xml
 <plugin>
 	<groupId>com.github.os72</groupId>
