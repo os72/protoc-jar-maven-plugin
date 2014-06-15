@@ -1,0 +1,16 @@
+
+  ------
+  Introduction
+  ------
+
+protoc-jar-maven-plugin
+
+  Protocol Buffers codegen plugin - based on protoc-jar executable JAR
+
+* Goals Overview
+
+  *{{{./run-mojo.html}protoc-jar:run}} Compiles .proto files using protoc-jar embedded protoc compiler
+
+* Usage
+
+  See {{{./usage.html}usage}}
