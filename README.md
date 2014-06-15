@@ -14,8 +14,8 @@ Based on
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>2.5.0.1</version> <!-- protobuf 2.5.0 -->
-	<!-- <version>2.4.1.1</version> --> <!-- protobuf 2.4.1 -->
+	<version>2.5.0.1</version> <!-- for protobuf 2.5.0 -->
+	<!-- <version>2.4.1.1</version> --> <!-- for protobuf 2.4.1 -->
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
