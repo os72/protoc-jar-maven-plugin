@@ -3,10 +3,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.os72</groupId>
-  <artifactId>protoc-jar-maven-plugin-build</artifactId>
-  <packaging>pom</packaging>
-  <version>1.2-SNAPSHOT</version>
-  <name>protoc-jar-maven-plugin-build</name>
+  <artifactId>protoc-jar-maven-plugin</artifactId>
+  <packaging>maven-plugin</packaging>
+  <version>2.5.0.2-SNAPSHOT</version>
+  <name>protoc-jar-maven-plugin</name>
   <url>https://github.com/os72/protoc-jar-maven-plugin</url>
   <description>Protocol Buffers codegen plugin - based on protoc-jar executable JAR</description>
 
@@ -37,18 +37,12 @@
 	<url>git@github.com:os72/protoc-jar-maven-plugin.git</url>
   </scm>
 
-  <modules>
-    <module>bin_241</module>
-    <module>bin_250</module>
-  </modules>
-
   <dependencies>
 	<dependency>
 	  <groupId>com.github.os72</groupId>
 	  <artifactId>protoc-jar</artifactId>
-	  <version>2.4.1.0</version> <!-- overriden in bin_241, bin_250 -->
+	  <version>2.5.0.0</version>
 	</dependency>
-
 	<dependency>
 	  <groupId>org.apache.maven</groupId>
 	  <artifactId>maven-plugin-api</artifactId>
@@ -78,5 +72,74 @@
 	  <scope>test</scope>
 	</dependency>
   </dependencies>
+
+  <build>
+	<plugins>
+		<plugin>
+		  <groupId>org.apache.maven.plugins</groupId>
+		  <artifactId>maven-assembly-plugin</artifactId>
+		  <configuration>
+			<appendAssemblyId>false</appendAssemblyId>
+			<archive>
+			  <manifest>
+				<mainClass>com.github.os72.protocjar.Protoc</mainClass>
+			  </manifest>
+			  <manifestEntries>
+				<Build-Id>${project.name}-${project.version}-${maven.build.timestamp}</Build-Id>
+			  </manifestEntries>
+			</archive>
+			<descriptors>
+				<descriptor>assembly.xml</descriptor>
+			</descriptors>
+		  </configuration>
+		  <executions>
+			<execution>
+				<id>make-assembly</id>
+				<phase>package</phase>
+				<goals>
+				  <goal>single</goal>
+				</goals>
+			 </execution>
+		  </executions>
+		</plugin>
+		<plugin>
+		  <groupId>org.apache.maven.plugins</groupId>
+		  <artifactId>maven-source-plugin</artifactId>
+		  <executions>
+			<execution>
+			  <id>attach-sources</id>
+				<goals>
+				 <goal>jar</goal>
+				</goals>
+			</execution>
+		  </executions>
+		</plugin>
+		<plugin>
+		  <groupId>org.apache.maven.plugins</groupId>
+		  <artifactId>maven-javadoc-plugin</artifactId>
+		  <executions>
+			<execution>
+			  <id>attach-javadoc</id>
+				<goals>
+				 <goal>jar</goal>
+				</goals>
+			</execution>
+		  </executions>
+		</plugin>
+	</plugins>
+  </build>
+
+  <reporting>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-project-info-reports-plugin</artifactId>
+		</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-plugin-plugin</artifactId>
+		</plugin>
+	</plugins>
+  </reporting>
 
 </project>
