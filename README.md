@@ -22,8 +22,9 @@ Documentation: http://os72.github.io/protoc-jar-maven-plugin/
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>2.5.0.1</version> <!-- for protobuf 2.5.0 -->
-	<!-- <version>2.4.1.1</version> --> <!-- for protobuf 2.4.1 -->
+	<version>2.4.1.2</version> <!-- for protobuf 2.4.1 -->
+	<!-- <version>2.5.0.2</version> --> <!-- for protobuf 2.5.0 -->
+	<!-- <version>2.6.1.2</version> --> <!-- for protobuf 2.6.1 -->
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
