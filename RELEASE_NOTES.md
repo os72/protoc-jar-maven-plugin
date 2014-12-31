@@ -1,6 +1,9 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 2.4.1.3, 2.5.0.3, 2.6.1.3 (31-Dec-2014)
+* Rebuilt Linux binaries on older toolchain for better portability
+
 #### 2.4.1.2, 2.5.0.2, 2.6.1.2 (30-Dec-2014)
 * Add support for protoc 2.6.1
 * Refactored into branches, retired builder pom.xml
