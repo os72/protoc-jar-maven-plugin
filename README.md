@@ -27,18 +27,15 @@ Documentation: http://os72.github.io/protoc-jar-maven-plugin/
 	<!-- <version>2.6.1.3</version> --> <!-- for protobuf 2.6.1 -->
 	<executions>
 		<execution>
-			<phase>generate-sources</phase>
 			<goals>
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<addSources>main</addSources>
-				<outputDirectory>src/java</outputDirectory>
 				<includeDirectories>
-					<include>src/java</include>
+					<include>src/main/protobuf</include>
 				</includeDirectories>
 				<inputDirectories>
-					<include>src/java</include>
+					<include>src/main/protobuf</include>
 				</inputDirectories>
 			</configuration>
 		</execution>
