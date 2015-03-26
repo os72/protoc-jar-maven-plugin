@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -34,6 +35,8 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import com.github.os72.protocjar.Protoc;
 
 /**
+ * Compiles .proto files using protoc-jar embedded protoc compiler (external protoc executable also supported)
+ * 
  * @goal run
  * @phase generate-sources
  * @requiresDependencyResolution
@@ -70,41 +73,72 @@ public class ProtocJarMojo extends AbstractMojo
 	private File[] includeDirectories;
 
 	/**
-	 * If this parameter is set to "true" output folder is cleaned prior to
+	 * If this parameter is set to "true" output folder is cleaned prior to the
 	 * build. This will not let old and new classes coexist after package or
 	 * class rename in your IDE cache or after non-clean rebuild. Set this to
 	 * "false" if you are doing multiple plugin invocations per build and it is
 	 * important to preserve output folder contents
+	 * <p>
+	 * Ignored when {@code <outputTargets>} is given
 	 * 
 	 * @parameter property="cleanOutputFolder" default-value="true"
-	 * @required
 	 */
 	private boolean cleanOutputFolder;
 
 	/**
-	 * Specifies a mode for plugin whether it should add outputDirectory to
-	 * sources that are going to be compiled Can be "main", "test" or "none"
+	 * Specifies whether to add outputDirectory to sources that are going to be compiled.
+	 * Options: "main", "test", "none" (default: "main")
+	 * <p>
+	 * Ignored when {@code <outputTargets>} is given
 	 * 
 	 * @parameter property="addSources" default-value="main"
-	 * @required
 	 */
 	private String addSources;
 
 	/**
-	 * Output directory, that generated java files would be stored Defaults to
+	 * Output directory for the generated java files. Defaults to
 	 * "${project.build.directory}/generated-sources/protobuf" or
-	 * "${project.build.directory}/generated-test-sources/protobuf" depending
-	 * addSources parameter
+	 * "${project.build.directory}/generated-test-sources/protobuf"
+	 * depending on the addSources parameter
+	 * <p>
+	 * Ignored when {@code <outputTargets>} is given
 	 * 
 	 * @parameter property="outputDirectory"
 	 */
 	private File outputDirectory;
 
 	/**
+	 * This parameter lets you specify multiple protoc output targets.
+	 * OutputTarget parameters: "type", "addSources", "cleanOutputFolder", "outputDirectory".
+	 * Type options: "java", "cpp", "python", "descriptor" (default: "java")
+	 * 
+	 * <pre>
+	 * {@code
+	 * <outputTargets>
+	 * 	<outputTarget>
+	 * 		<type>java</type>
+	 * 		<addSources>none</addSources>
+	 * 		<cleanOutputFolder>false</cleanOutputFolder>
+	 * 		<outputDirectory>src/main/java</outputDirectory>
+	 * 	</outputTarget>
+	 * 	<outputTarget>
+	 * 		<type>python</type>
+	 * 		<addSources>none</addSources>
+	 * 		<cleanOutputFolder>false</cleanOutputFolder>
+	 * 		<outputDirectory>src/main/python</outputDirectory>
+	 * 	</outputTarget>
+	 * <outputTargets>
+	 * }
+	 * </pre>
+	 * 
+	 * @parameter property="outputTargets"
+	 */
+	private OutputTarget[] outputTargets;
+
+	/**
 	 * Default extension for protobuf files
 	 * 
 	 * @parameter property="extension" default-value=".proto"
-	 * @required
 	 */
 	private String extension;
 
@@ -129,10 +163,19 @@ public class ProtocJarMojo extends AbstractMojo
 			outputDirectory = new File(project.getBuild().getDirectory() + File.separator + subdir + File.separator);
 		}
 		
+		if (outputTargets == null || outputTargets.length == 0) {
+			OutputTarget target = new OutputTarget();
+			target.type = "java";
+			target.addSources = addSources;
+			target.cleanOutputFolder = cleanOutputFolder;
+			target.outputDirectory = outputDirectory;
+			outputTargets = new OutputTarget[] {target};
+		}
+		
 		performProtoCompilation();
 	}
 
-	private void performProtoCompilation() throws MojoExecutionException {
+	private void performProtoCompilation() throws MojoExecutionException {	
 		if (includeDirectories != null && includeDirectories.length > 0) {
 			getLog().info("Include directories:");
 			for (File include : includeDirectories) getLog().info("    " + include);
@@ -147,14 +190,19 @@ public class ProtocJarMojo extends AbstractMojo
 			inputDirectories = new File[] { inputDir };
 		}
 		
-		getLog().info("Output directory: " + outputDirectory);
-		File f = outputDirectory;
+		getLog().info("Output targets:");
+		for (OutputTarget target : outputTargets) getLog().info("    " + target);
+		for (OutputTarget target : outputTargets) processTarget(target);
+	}
+
+	private void processTarget(OutputTarget target) throws MojoExecutionException {
+		File f = target.outputDirectory;
 		if (!f.exists()) {
 			getLog().info(f + " does not exist. Creating...");
 			f.mkdirs();
 		}
 		
-		if (cleanOutputFolder) {
+		if (target.cleanOutputFolder) {
 			try {
 				getLog().info("Cleaning " + f);
 				FileUtils.cleanDirectory(f);
@@ -163,7 +211,7 @@ public class ProtocJarMojo extends AbstractMojo
 				e.printStackTrace();
 			}
 		}
-
+		
 		FileFilter fileFilter = new FileFilter(extension);
 		for (File input : inputDirectories) {
 			if (input == null) continue;
@@ -171,7 +219,7 @@ public class ProtocJarMojo extends AbstractMojo
 			if (input.exists() && input.isDirectory()) {
 				File[] files = input.listFiles(fileFilter);
 				for (File file : files) {
-					if (cleanOutputFolder || buildContext.hasDelta(file.getPath())) processFile(file, outputDirectory);
+					if (target.cleanOutputFolder || buildContext.hasDelta(file.getPath())) processFile(file, target.type, target.outputDirectory);
 					else getLog().info("Not changed " + file);
 				}
 			}
@@ -181,25 +229,25 @@ public class ProtocJarMojo extends AbstractMojo
 			}
 		}
 		
-		boolean mainAddSources = "main".endsWith(addSources);
-		boolean testAddSources = "test".endsWith(addSources);
+		boolean mainAddSources = "main".endsWith(target.addSources);
+		boolean testAddSources = "test".endsWith(target.addSources);
 		
 		if (mainAddSources) {
 			getLog().info("Adding generated classes to classpath");
-			project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
+			project.addCompileSourceRoot(target.outputDirectory.getAbsolutePath());
 		}
 		if (testAddSources) {
 			getLog().info("Adding generated classes to test classpath");
-			project.addTestCompileSourceRoot(outputDirectory.getAbsolutePath());
+			project.addTestCompileSourceRoot(target.outputDirectory.getAbsolutePath());
 		}
 		if (mainAddSources || testAddSources) {
-			buildContext.refresh(outputDirectory);
+			buildContext.refresh(target.outputDirectory);
 		}
 	}
 
-	private void processFile(File file, File outputDir) throws MojoExecutionException {
-		getLog().info("    Processing " + file.getName());
-		Collection<String> cmd = buildCommand(file, outputDir);
+	private void processFile(File file, String type, File outputDir) throws MojoExecutionException {
+		getLog().info("    Processing ("+ type + "): " + file.getName());
+		Collection<String> cmd = buildCommand(file, type, outputDir);
 		try {
 			int ret = 0;
 			if (protocCommand == null) ret = Protoc.runProtoc(cmd.toArray(new String[0]));
@@ -214,11 +262,23 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private Collection<String> buildCommand(File file, File outputDir) throws MojoExecutionException {
+	private Collection<String> buildCommand(File file, String type, File outputDir) throws MojoExecutionException {
 		Collection<String> cmd = new LinkedList<String>();
 		populateIncludes(cmd);
 		cmd.add("-I" + file.getParentFile().getAbsolutePath());
-		cmd.add("--java_out=" + outputDir);
+		if ("descriptor".equals(type)) {
+			cmd.add("--descriptor_set_out=" + FilenameUtils.removeExtension(file.toString()) + ".desc");
+			cmd.add("--include_imports");
+		}
+		else if ("python".equals(type)) {
+			cmd.add("--python_out=" + outputDir);
+		}
+		else if ("cpp".equals(type)) {
+			cmd.add("--cpp_out=" + outputDir);
+		}
+		else {
+			cmd.add("--java_out=" + outputDir);
+		}
 		cmd.add(file.toString());
 		return cmd;
 	}
