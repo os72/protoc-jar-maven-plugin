@@ -27,6 +27,7 @@ Documentation: http://os72.github.io/protoc-jar-maven-plugin/
 	<!-- <version>2.6.1.3</version> --> <!-- for protobuf 2.6.1 -->
 	<executions>
 		<execution>
+			<phase>generate-sources</phase>
 			<goals>
 				<goal>run</goal>
 			</goals>
