@@ -108,6 +108,16 @@ public class ProtocJarMojo extends AbstractMojo
 	private File outputDirectory;
 
 	/**
+	 * Specifies output type.
+	 * Options: "java",  "cpp", "python", "descriptor" (default: "java")
+	 * <p>
+	 * Ignored when {@code <outputTargets>} is given
+	 * 
+	 * @parameter property="type" default-value="java"
+	 */
+	String type;
+
+	/**
 	 * This parameter lets you specify multiple protoc output targets.
 	 * OutputTarget parameters: "type", "addSources", "cleanOutputFolder", "outputDirectory".
 	 * Type options: "java", "cpp", "python", "descriptor" (default: "java")
@@ -165,7 +175,7 @@ public class ProtocJarMojo extends AbstractMojo
 		
 		if (outputTargets == null || outputTargets.length == 0) {
 			OutputTarget target = new OutputTarget();
-			target.type = "java";
+			target.type = type;
 			target.addSources = addSources;
 			target.cleanOutputFolder = cleanOutputFolder;
 			target.outputDirectory = outputDirectory;
