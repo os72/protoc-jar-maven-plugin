@@ -165,14 +165,6 @@ public class ProtocJarMojo extends AbstractMojo
 			return;
 		}
 		
-		addSources = addSources.toLowerCase().trim();
-		if ("true".equals(addSources)) addSources = "main";
-		
-		if (outputDirectory == null) {
-			String subdir = "generated-" + ("test".equals(addSources) ? "test-" : "") + "sources";
-			outputDirectory = new File(project.getBuild().getDirectory() + File.separator + subdir + File.separator);
-		}
-		
 		if (outputTargets == null || outputTargets.length == 0) {
 			OutputTarget target = new OutputTarget();
 			target.type = type;
@@ -180,6 +172,16 @@ public class ProtocJarMojo extends AbstractMojo
 			target.cleanOutputFolder = cleanOutputFolder;
 			target.outputDirectory = outputDirectory;
 			outputTargets = new OutputTarget[] {target};
+		}
+
+		for (OutputTarget target : outputTargets) {
+			target.addSources = target.addSources.toLowerCase().trim();
+			if ("true".equals(target.addSources)) target.addSources = "main";
+			
+			if (target.outputDirectory == null) {
+				String subdir = "generated-" + ("test".equals(target.addSources) ? "test-" : "") + "sources";
+				target.outputDirectory = new File(project.getBuild().getDirectory() + File.separator + subdir + File.separator);
+			}
 		}
 		
 		performProtoCompilation();
@@ -202,10 +204,11 @@ public class ProtocJarMojo extends AbstractMojo
 		
 		getLog().info("Output targets:");
 		for (OutputTarget target : outputTargets) getLog().info("    " + target);
+		for (OutputTarget target : outputTargets) preprocessTarget(target);
 		for (OutputTarget target : outputTargets) processTarget(target);
 	}
 
-	private void processTarget(OutputTarget target) throws MojoExecutionException {
+	private void preprocessTarget(OutputTarget target) throws MojoExecutionException {
 		File f = target.outputDirectory;
 		if (!f.exists()) {
 			getLog().info(f + " does not exist. Creating...");
@@ -221,7 +224,9 @@ public class ProtocJarMojo extends AbstractMojo
 				e.printStackTrace();
 			}
 		}
-		
+	}
+
+	private void processTarget(OutputTarget target) throws MojoExecutionException {		
 		FileFilter fileFilter = new FileFilter(extension);
 		for (File input : inputDirectories) {
 			if (input == null) continue;
@@ -277,7 +282,8 @@ public class ProtocJarMojo extends AbstractMojo
 		populateIncludes(cmd);
 		cmd.add("-I" + file.getParentFile().getAbsolutePath());
 		if ("descriptor".equals(type)) {
-			cmd.add("--descriptor_set_out=" + FilenameUtils.removeExtension(file.toString()) + ".desc");
+			File outFile = new File(outputDir, file.getName());
+			cmd.add("--descriptor_set_out=" + FilenameUtils.removeExtension(outFile.toString()) + ".desc");
 			cmd.add("--include_imports");
 		}
 		else if ("python".equals(type)) {
