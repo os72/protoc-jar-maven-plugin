@@ -18,13 +18,14 @@ Branches
 
 Documentation: http://os72.github.io/protoc-jar-maven-plugin/
 
+Sample usage - compile in main cycle into target/generated-sources, add folder to pom:
 ```xml
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>2.4.1.3</version> <!-- for protobuf 2.4.1 -->
-	<!-- <version>2.5.0.3</version> --> <!-- for protobuf 2.5.0 -->
-	<!-- <version>2.6.1.3</version> --> <!-- for protobuf 2.6.1 -->
+	<version>2.4.1.4</version> <!-- for protobuf 2.4.1 -->
+	<!-- <version>2.5.0.4</version> --> <!-- for protobuf 2.5.0 -->
+	<!-- <version>2.6.1.4</version> --> <!-- for protobuf 2.6.1 -->
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -38,6 +39,75 @@ Documentation: http://os72.github.io/protoc-jar-maven-plugin/
 				<inputDirectories>
 					<include>src/main/protobuf</include>
 				</inputDirectories>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+```
+
+Sample usage - generate python, don't alter pom:
+```xml
+<plugin>
+	<groupId>com.github.os72</groupId>
+	<artifactId>protoc-jar-maven-plugin</artifactId>
+	<version>2.4.1.4</version> <!-- for protobuf 2.4.1 -->
+	<!-- <version>2.5.0.4</version> --> <!-- for protobuf 2.5.0 -->
+	<!-- <version>2.6.1.4</version> --> <!-- for protobuf 2.6.1 -->
+	<executions>
+		<execution>
+			<phase>generate-sources</phase>
+			<goals>
+				<goal>run</goal>
+			</goals>
+			<configuration>
+				<type>python</type>
+				<addSources>none</addSources>
+				<outputDirectory>src/main/python</outputDirectory>
+				<includeDirectories>
+					<include>src/main/protobuf</include>
+				</includeDirectories>
+				<inputDirectories>
+					<include>src/main/protobuf</include>
+				</inputDirectories>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+```
+
+Sample usage - compile in test cycle, multiple output targets:
+```xml
+<plugin>
+	<groupId>com.github.os72</groupId>
+	<artifactId>protoc-jar-maven-plugin</artifactId>
+	<version>2.4.1.4</version> <!-- for protobuf 2.4.1 -->
+	<!-- <version>2.5.0.4</version> --> <!-- for protobuf 2.5.0 -->
+	<!-- <version>2.6.1.4</version> --> <!-- for protobuf 2.6.1 -->
+	<executions>
+		<execution>
+			<phase>generate-test-sources</phase>
+			<goals>
+				<goal>run</goal>
+			</goals>
+			<configuration>
+				<includeDirectories>
+					<include>src/test/resources</include>
+				</includeDirectories>
+				<inputDirectories>
+					<include>src/test/resources</include>
+				</inputDirectories>
+				<outputTargets>
+					<outputTarget>
+						<type>java</type>
+						<addSources>none</addSources>
+						<outputDirectory>src/test/java</outputDirectory>
+					</outputTarget>
+					<outputTarget>
+						<type>descriptor</type>
+						<addSources>none</addSources>
+						<outputDirectory>src/test/resources</outputDirectory>
+					</outputTarget>
+				</outputTargets>
 			</configuration>
 		</execution>
 	</executions>

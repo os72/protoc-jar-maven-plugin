@@ -1,6 +1,11 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 2.4.1.4, 2.5.0.4, 2.6.1.4 (27-Mar-2015)
+* Support all protoc output targets: java, cpp, python, descriptor
+* Support multiple output targets in one execution
+* Switch "cleanOutputFolder" default to false
+
 #### 2.4.1.3, 2.5.0.3, 2.6.1.3 (31-Dec-2014)
 * Rebuilt Linux binaries on older toolchain for better portability
 
