@@ -5,12 +5,170 @@
 
 protoc-jar-maven-plugin
 
-  Protocol Buffers codegen plugin - based on protoc-jar executable JAR
+  Protocol Buffers codegen plugin - based on {{{https://github.com/os72/protoc-jar}protoc-jar}} executable JAR
 
 * Goals Overview
 
-  *{{{./run-mojo.html}protoc-jar:run}} Compiles .proto files using protoc-jar embedded protoc compiler
+    * {{{./run-mojo.html}protoc-jar:run}} Compiles .proto files using protoc-jar embedded protoc compiler (external protoc executable also supported)
 
 * Usage
+  
+  Typically used in following {{{http://maven.apache.org/ref/current/maven-core/lifecycles.html}lifecycle phases}}:
+  
+    * generate-sources (main cycle, default)
+  
+    * generate-test-sources (test cycle)
 
-  See {{{./usage.html}usage}}
+  \
+  Sample usage - compile in main cycle into target/generated-sources, add folder to pom
+
++---+
+<plugin>
+	<groupId>com.github.os72</groupId>
+	<artifactId>protoc-jar-maven-plugin</artifactId>
+	<version>2.4.1.4</version> <!-- for protobuf 2.4.1 -->
+	<executions>
+		<execution>
+			<phase>generate-sources</phase>
+			<goals>
+				<goal>run</goal>
+			</goals>
+			<configuration>
+				<includeDirectories>
+					<include>src/main/protobuf</include>
+				</includeDirectories>
+				<inputDirectories>
+					<include>src/main/protobuf</include>
+				</inputDirectories>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
++---+
+
+  \
+  Sample usage - compile in main cycle into src/main/java, don't alter pom
+
++---+
+<plugin>
+	<groupId>com.github.os72</groupId>
+	<artifactId>protoc-jar-maven-plugin</artifactId>
+	<version>2.4.1.4</version> <!-- for protobuf 2.4.1 -->
+	<executions>
+		<execution>
+			<phase>generate-sources</phase>
+			<goals>
+				<goal>run</goal>
+			</goals>
+			<configuration>
+				<addSources>none</addSources>
+				<outputDirectory>src/main/java</outputDirectory>
+				<includeDirectories>
+					<include>src/main/protobuf</include>
+				</includeDirectories>
+				<inputDirectories>
+					<include>src/main/protobuf</include>
+				</inputDirectories>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
++---+
+
+  \
+  Sample usage - compile in test cycle into src/test/java, don't alter pom
+
++---+
+<plugin>
+	<groupId>com.github.os72</groupId>
+	<artifactId>protoc-jar-maven-plugin</artifactId>
+	<version>2.4.1.4</version> <!-- for protobuf 2.4.1 -->
+	<executions>
+		<execution>
+			<phase>generate-test-sources</phase>
+			<goals>
+				<goal>run</goal>
+			</goals>
+			<configuration>
+				<addSources>none</addSources>
+				<outputDirectory>src/test/java</outputDirectory>
+				<includeDirectories>
+					<include>src/test/protobuf</include>
+				</includeDirectories>
+				<inputDirectories>
+					<include>src/test/protobuf</include>
+				</inputDirectories>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
++---+
+
+  \
+  Sample usage - generate python, don't alter pom
+
++---+
+<plugin>
+	<groupId>com.github.os72</groupId>
+	<artifactId>protoc-jar-maven-plugin</artifactId>
+	<version>2.4.1.4</version> <!-- for protobuf 2.4.1 -->
+	<executions>
+		<execution>
+			<phase>generate-sources</phase>
+			<goals>
+				<goal>run</goal>
+			</goals>
+			<configuration>
+				<type>python</type>
+				<addSources>none</addSources>
+				<outputDirectory>src/main/python</outputDirectory>
+				<includeDirectories>
+					<include>src/main/protobuf</include>
+				</includeDirectories>
+				<inputDirectories>
+					<include>src/main/protobuf</include>
+				</inputDirectories>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
++---+
+
+  \
+  Sample usage - compile in test cycle, multiple output targets
+
++---+
+<plugin>
+	<groupId>com.github.os72</groupId>
+	<artifactId>protoc-jar-maven-plugin</artifactId>
+	<version>2.4.1.4</version> <!-- for protobuf 2.4.1 -->
+	<executions>
+		<execution>
+			<phase>generate-test-sources</phase>
+			<goals>
+				<goal>run</goal>
+			</goals>
+			<configuration>
+				<includeDirectories>
+					<include>src/test/resources</include>
+				</includeDirectories>
+				<inputDirectories>
+					<include>src/test/resources</include>
+				</inputDirectories>
+				<outputTargets>
+					<outputTarget>
+						<type>java</type>
+						<addSources>none</addSources>
+						<outputDirectory>src/test/java</outputDirectory>
+					</outputTarget>
+					<outputTarget>
+						<type>descriptor</type>
+						<addSources>none</addSources>
+						<outputDirectory>src/test/resources</outputDirectory>
+					</outputTarget>
+				</outputTargets>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
++---+
