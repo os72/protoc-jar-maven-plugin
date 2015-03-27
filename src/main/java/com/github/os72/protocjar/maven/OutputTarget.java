@@ -10,7 +10,7 @@ public class OutputTarget
 	public OutputTarget() {
 		type = "java";
 		addSources = "main";
-		cleanOutputFolder = true;
+		cleanOutputFolder = false;
 		outputDirectory = null;
 	}
 
@@ -37,7 +37,7 @@ public class OutputTarget
 	 * "false" if you are doing multiple plugin invocations per build and it is
 	 * important to preserve output folder contents
 	 * 
-	 * @parameter property="cleanOutputFolder" default-value="true"
+	 * @parameter property="cleanOutputFolder" default-value="false"
 	 */
 	boolean cleanOutputFolder;
 

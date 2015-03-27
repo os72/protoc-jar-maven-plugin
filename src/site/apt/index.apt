@@ -20,7 +20,7 @@ protoc-jar-maven-plugin
     * generate-test-sources (test cycle)
 
   \
-  Sample usage - compile in main cycle into target/generated-sources, clean folder, add folder to pom
+  Sample usage - compile in main cycle into target/generated-sources, add folder to pom
 
 +---+
 <plugin>
@@ -63,7 +63,6 @@ protoc-jar-maven-plugin
 			<configuration>
 				<addSources>none</addSources>
 				<outputDirectory>src/main/java</outputDirectory>
-				<cleanOutputFolder>false</cleanOutputFolder>
 				<includeDirectories>
 					<include>src/main/protobuf</include>
 				</includeDirectories>
@@ -93,7 +92,6 @@ protoc-jar-maven-plugin
 			<configuration>
 				<addSources>none</addSources>
 				<outputDirectory>src/test/java</outputDirectory>
-				<cleanOutputFolder>false</cleanOutputFolder>
 				<includeDirectories>
 					<include>src/test/protobuf</include>
 				</includeDirectories>
@@ -124,7 +122,6 @@ protoc-jar-maven-plugin
 				<type>python</type>
 				<addSources>none</addSources>
 				<outputDirectory>src/main/python</outputDirectory>
-				<cleanOutputFolder>false</cleanOutputFolder>
 				<includeDirectories>
 					<include>src/main/protobuf</include>
 				</includeDirectories>
@@ -162,13 +159,11 @@ protoc-jar-maven-plugin
 					<outputTarget>
 						<type>java</type>
 						<addSources>none</addSources>
-						<cleanOutputFolder>false</cleanOutputFolder>
 						<outputDirectory>src/test/java</outputDirectory>
 					</outputTarget>
 					<outputTarget>
 						<type>descriptor</type>
 						<addSources>none</addSources>
-						<cleanOutputFolder>false</cleanOutputFolder>
 						<outputDirectory>src/test/resources</outputDirectory>
 					</outputTarget>
 				</outputTargets>

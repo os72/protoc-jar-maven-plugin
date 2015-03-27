@@ -81,7 +81,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * <p>
 	 * Ignored when {@code <outputTargets>} is given
 	 * 
-	 * @parameter property="cleanOutputFolder" default-value="true"
+	 * @parameter property="cleanOutputFolder" default-value="false"
 	 */
 	private boolean cleanOutputFolder;
 
