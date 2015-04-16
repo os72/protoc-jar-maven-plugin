@@ -1,13 +1,15 @@
 protoc-jar-maven-plugin
 =======================
 
-Protocol Buffers codegen plugin - based on protoc-jar executable JAR. Available on Maven Central: http://central.maven.org/maven2/com/github/os72/protoc-jar-maven-plugin/
+Protocol Buffers maven plugin - performs protobuf code generation using protoc-jar executable JAR.
+Available on Maven Central: http://central.maven.org/maven2/com/github/os72/protoc-jar-maven-plugin/
 
-Simple maven plugin to compile .proto files using protoc-jar embedded protoc compiler. See the Protocol Buffers site for details: https://github.com/google/protobuf
+Simple maven plugin to compile .proto files using protoc-jar embedded protoc compiler, providing some portability across the major platforms
 
 Based on
 * https://github.com/os72/protoc-jar
 * https://github.com/igor-petruk/protobuf-maven-plugin
+* https://github.com/google/protobuf
 
 Branches
 * https://github.com/os72/protoc-jar-maven-plugin/tree/protobuf_241 (protobuf 2.4.1)
