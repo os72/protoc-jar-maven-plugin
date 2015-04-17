@@ -1,7 +1,7 @@
 protoc-jar-maven-plugin
 =======================
 
-Protocol Buffers maven plugin - performs protobuf code generation using protoc-jar executable JAR.
+Protocol Buffers maven plugin - performs protobuf code generation using multi-platform protoc-jar executable JAR.
 Available on Maven Central: http://central.maven.org/maven2/com/github/os72/protoc-jar-maven-plugin/
 
 Simple maven plugin to compile .proto files using protoc-jar embedded protoc compiler, providing some portability across the major platforms
