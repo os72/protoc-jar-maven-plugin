@@ -97,8 +97,8 @@ public class ProtocJarMojo extends AbstractMojo
 
 	/**
 	 * Output directory for the generated java files. Defaults to
-	 * "${project.build.directory}/generated-sources/protobuf" or
-	 * "${project.build.directory}/generated-test-sources/protobuf"
+	 * "${project.build.directory}/generated-sources" or
+	 * "${project.build.directory}/generated-test-sources"
 	 * depending on the addSources parameter
 	 * <p>
 	 * Ignored when {@code <outputTargets>} is given
