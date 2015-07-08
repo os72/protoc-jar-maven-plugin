@@ -58,6 +58,13 @@ public class ProtocJarMojo extends AbstractMojo
 	private BuildContext buildContext;
 
 	/**
+	 * Specifies protoc version.
+	 * 
+	 * @parameter property="protocVersion"
+	 */
+	String protocVersion;
+
+	/**
 	 * Input directories that have *.proto files (or the configured extension).
 	 * If none specified then <b>src/main/protobuf</b> is used.
 	 * 
@@ -188,6 +195,8 @@ public class ProtocJarMojo extends AbstractMojo
 	}
 
 	private void performProtoCompilation() throws MojoExecutionException {	
+		getLog().info("Protoc version: " + protocVersion);
+		
 		if (includeDirectories != null && includeDirectories.length > 0) {
 			getLog().info("Include directories:");
 			for (File include : includeDirectories) getLog().info("    " + include);
@@ -234,7 +243,7 @@ public class ProtocJarMojo extends AbstractMojo
 			if (input.exists() && input.isDirectory()) {
 				File[] files = input.listFiles(fileFilter);
 				for (File file : files) {
-					if (target.cleanOutputFolder || buildContext.hasDelta(file.getPath())) processFile(file, target.type, target.outputDirectory);
+					if (target.cleanOutputFolder || buildContext.hasDelta(file.getPath())) processFile(file, protocVersion, target.type, target.outputDirectory);
 					else getLog().info("Not changed " + file);
 				}
 			}
@@ -260,9 +269,9 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private void processFile(File file, String type, File outputDir) throws MojoExecutionException {
+	private void processFile(File file, String version, String type, File outputDir) throws MojoExecutionException {
 		getLog().info("    Processing ("+ type + "): " + file.getName());
-		Collection<String> cmd = buildCommand(file, type, outputDir);
+		Collection<String> cmd = buildCommand(file, version, type, outputDir);
 		try {
 			int ret = 0;
 			if (protocCommand == null) ret = Protoc.runProtoc(cmd.toArray(new String[0]));
@@ -277,7 +286,7 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private Collection<String> buildCommand(File file, String type, File outputDir) throws MojoExecutionException {
+	private Collection<String> buildCommand(File file, String version, String type, File outputDir) throws MojoExecutionException {
 		Collection<String> cmd = new LinkedList<String>();
 		populateIncludes(cmd);
 		cmd.add("-I" + file.getParentFile().getAbsolutePath());
@@ -296,6 +305,7 @@ public class ProtocJarMojo extends AbstractMojo
 			cmd.add("--java_out=" + outputDir);
 		}
 		cmd.add(file.toString());
+		if (version != null) cmd.add("-v" + version);
 		return cmd;
 	}
 
