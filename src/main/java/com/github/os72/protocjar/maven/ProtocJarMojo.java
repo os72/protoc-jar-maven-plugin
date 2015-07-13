@@ -116,7 +116,7 @@ public class ProtocJarMojo extends AbstractMojo
 
 	/**
 	 * Specifies output type.
-	 * Options: "java",  "cpp", "python", "descriptor" (default: "java")
+	 * Options: "java",  "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby"
 	 * <p>
 	 * Ignored when {@code <outputTargets>} is given
 	 * 
@@ -127,7 +127,7 @@ public class ProtocJarMojo extends AbstractMojo
 	/**
 	 * This parameter lets you specify multiple protoc output targets.
 	 * OutputTarget parameters: "type", "addSources", "cleanOutputFolder", "outputDirectory".
-	 * Type options: "java", "cpp", "python", "descriptor" (default: "java")
+	 * Type options: "java", "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby"
 	 * 
 	 * <pre>
 	 * {@code
@@ -295,14 +295,8 @@ public class ProtocJarMojo extends AbstractMojo
 			cmd.add("--descriptor_set_out=" + FilenameUtils.removeExtension(outFile.toString()) + ".desc");
 			cmd.add("--include_imports");
 		}
-		else if ("python".equals(type)) {
-			cmd.add("--python_out=" + outputDir);
-		}
-		else if ("cpp".equals(type)) {
-			cmd.add("--cpp_out=" + outputDir);
-		}
 		else {
-			cmd.add("--java_out=" + outputDir);
+			cmd.add("--" + type + "_out=" + outputDir);
 		}
 		cmd.add(file.toString());
 		if (version != null) cmd.add("-v" + version);
