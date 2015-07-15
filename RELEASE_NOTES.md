@@ -1,6 +1,12 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.0.0-a3 (15-Jul-2015)
+* Single package to include all protoc versions
+* New parameter "protocVersion" to select version
+* Add support for protoc 3.0.0-alpha-3
+* Support proto3 output types (javanano, csharp, objc, ruby)
+
 #### 2.4.1.4, 2.5.0.4, 2.6.1.4 (27-Mar-2015)
 * Support all protoc output targets: java, cpp, python, descriptor
 * Support multiple output targets in one execution

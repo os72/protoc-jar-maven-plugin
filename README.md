@@ -11,11 +11,6 @@ Based on
 * https://github.com/igor-petruk/protobuf-maven-plugin
 * https://github.com/google/protobuf
 
-Branches
-* https://github.com/os72/protoc-jar-maven-plugin/tree/protobuf_241 (protobuf 2.4.1)
-* https://github.com/os72/protoc-jar-maven-plugin/tree/protobuf_250 (protobuf 2.5.0)
-* https://github.com/os72/protoc-jar-maven-plugin/tree/protobuf_261 (protobuf 2.6.1)
-
 #### Usage
 
 Documentation: http://os72.github.io/protoc-jar-maven-plugin/
@@ -25,9 +20,7 @@ Sample usage - compile in main cycle into target/generated-sources, add folder t
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>2.4.1.4</version> <!-- for protobuf 2.4.1 -->
-	<!-- <version>2.5.0.4</version> --> <!-- for protobuf 2.5.0 -->
-	<!-- <version>2.6.1.4</version> --> <!-- for protobuf 2.6.1 -->
+	<version>3.0.0-a3</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -35,6 +28,7 @@ Sample usage - compile in main cycle into target/generated-sources, add folder t
 				<goal>run</goal>
 			</goals>
 			<configuration>
+				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
 				<includeDirectories>
 					<include>src/main/protobuf</include>
 				</includeDirectories>
@@ -52,9 +46,7 @@ Sample usage - generate python, don't alter pom:
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>2.4.1.4</version> <!-- for protobuf 2.4.1 -->
-	<!-- <version>2.5.0.4</version> --> <!-- for protobuf 2.5.0 -->
-	<!-- <version>2.6.1.4</version> --> <!-- for protobuf 2.6.1 -->
+	<version>3.0.0-a3</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -62,6 +54,7 @@ Sample usage - generate python, don't alter pom:
 				<goal>run</goal>
 			</goals>
 			<configuration>
+				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
 				<type>python</type>
 				<addSources>none</addSources>
 				<outputDirectory>src/main/python</outputDirectory>
@@ -82,9 +75,7 @@ Sample usage - compile in test cycle, multiple output targets:
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>2.4.1.4</version> <!-- for protobuf 2.4.1 -->
-	<!-- <version>2.5.0.4</version> --> <!-- for protobuf 2.5.0 -->
-	<!-- <version>2.6.1.4</version> --> <!-- for protobuf 2.6.1 -->
+	<version>3.0.0-a3</version>
 	<executions>
 		<execution>
 			<phase>generate-test-sources</phase>
@@ -92,6 +83,7 @@ Sample usage - compile in test cycle, multiple output targets:
 				<goal>run</goal>
 			</goals>
 			<configuration>
+				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
 				<includeDirectories>
 					<include>src/test/resources</include>
 				</includeDirectories>
