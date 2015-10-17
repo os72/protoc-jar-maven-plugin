@@ -1,6 +1,10 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.0.0-b1 (17-Oct-2015)
+* Upgrade to protoc 3.0.0-beta-1
+* All 3.0.0-beta-1 binaries from Google (maven central)
+
 #### 3.0.0-a3 (15-Jul-2015)
 * Single package to include all protoc versions
 * New parameter "protocVersion" to select version
