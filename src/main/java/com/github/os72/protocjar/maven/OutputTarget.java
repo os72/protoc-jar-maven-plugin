@@ -16,7 +16,7 @@ public class OutputTarget
 
 	/**
 	 * Specifies output type.
-	 * Options: "java",  "cpp", "python", "descriptor" (default: "java")
+	 * Options: "java",  "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby", "js"
 	 * 
 	 * @parameter property="type" default-value="java"
 	 */

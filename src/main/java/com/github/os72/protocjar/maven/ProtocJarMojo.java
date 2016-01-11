@@ -116,7 +116,7 @@ public class ProtocJarMojo extends AbstractMojo
 
 	/**
 	 * Specifies output type.
-	 * Options: "java",  "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby"
+	 * Options: "java",  "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby", "js"
 	 * <p>
 	 * Ignored when {@code <outputTargets>} is given
 	 * 
@@ -127,7 +127,7 @@ public class ProtocJarMojo extends AbstractMojo
 	/**
 	 * This parameter lets you specify multiple protoc output targets.
 	 * OutputTarget parameters: "type", "addSources", "cleanOutputFolder", "outputDirectory".
-	 * Type options: "java", "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby"
+	 * Type options: "java", "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby", "js"
 	 * 
 	 * <pre>
 	 * {@code
