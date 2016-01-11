@@ -1,6 +1,10 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.0.0-b2 (11-Jan-2016)
+* Upgrade to protoc 3.0.0-beta-2
+* Supports proto3 Javascript type (js)
+
 #### 3.0.0-b1 (17-Oct-2015)
 * Upgrade to protoc 3.0.0-beta-1
 * All 3.0.0-beta-1 binaries from Google (maven central)
