@@ -20,12 +20,13 @@
 package com.github.os72.protocjar.maven;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -241,7 +242,7 @@ public class ProtocJarMojo extends AbstractMojo
 			if (input == null) continue;
 			
 			if (input.exists() && input.isDirectory()) {
-				File[] files = input.listFiles(fileFilter);
+				Collection<File> files = org.apache.commons.io.FileUtils.listFiles(input, fileFilter , TrueFileFilter.INSTANCE  );
 				for (File file : files) {
 					if (target.cleanOutputFolder || buildContext.hasDelta(file.getPath())) processFile(file, protocVersion, target.type, target.outputDirectory);
 					else getLog().info("Not changed " + file);
@@ -311,7 +312,7 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	class FileFilter implements FilenameFilter
+	class FileFilter implements IOFileFilter
 	{
 		String extension;
 
@@ -322,5 +323,7 @@ public class ProtocJarMojo extends AbstractMojo
 		public boolean accept(File dir, String name) {
 			return name.endsWith(extension);
 		}
+
+		public boolean accept(File file) { return file.getName().endsWith(extension);}
 	}
 }
