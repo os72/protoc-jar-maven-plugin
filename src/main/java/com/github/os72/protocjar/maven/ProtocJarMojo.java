@@ -324,6 +324,8 @@ public class ProtocJarMojo extends AbstractMojo
 			return name.endsWith(extension);
 		}
 
-		public boolean accept(File file) { return file.getName().endsWith(extension);}
+		public boolean accept(File file) {
+			return file.getName().endsWith(extension);
+		}
 	}
 }
