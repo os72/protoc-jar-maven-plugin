@@ -24,13 +24,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.FileUtils;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.github.os72.protocjar.Protoc;
@@ -242,7 +242,7 @@ public class ProtocJarMojo extends AbstractMojo
 			if (input == null) continue;
 			
 			if (input.exists() && input.isDirectory()) {
-				Collection<File> files = org.apache.commons.io.FileUtils.listFiles(input, fileFilter , TrueFileFilter.INSTANCE  );
+				Collection<File> files = FileUtils.listFiles(input, fileFilter, TrueFileFilter.INSTANCE);
 				for (File file : files) {
 					if (target.cleanOutputFolder || buildContext.hasDelta(file.getPath())) processFile(file, protocVersion, target.type, target.outputDirectory);
 					else getLog().info("Not changed " + file);
