@@ -1,6 +1,10 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.0.0-b2.1 (16-Mar-2016)
+* Process proto files in input directory recursively
+* Include protoc-jar fix for text file busy issue (reported for Ubuntu 14.04)
+
 #### 3.0.0-b2 (11-Jan-2016)
 * Upgrade to protoc 3.0.0-beta-2
 * Supports proto3 Javascript type (js)
