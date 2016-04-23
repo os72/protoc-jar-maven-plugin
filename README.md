@@ -6,7 +6,7 @@ Available on Maven Central: http://central.maven.org/maven2/com/github/os72/prot
 
 [![Maven Central](https://img.shields.io/badge/maven%20central-3.0.0--b2.1-brightgreen.svg)](http://search.maven.org/#artifactdetails|com.github.os72|protoc-jar-maven-plugin|3.0.0-b2.1|)
 
-Simple maven plugin to compile .proto files using protoc-jar embedded protoc compiler, providing some portability across the major platforms (Linux, Mac/OSX, and Windows)
+Simple maven plugin to compile .proto files using protoc-jar embedded protoc compiler, providing some portability across the major platforms (Linux, Mac/OSX, and Windows). At build time the plugin detects the platform and executes the corresponding protoc binary. Supports protoc versions 2.4.1, 2.5.0, 2.6.1, 3.0.0
 
 Based on
 * https://github.com/os72/protoc-jar
