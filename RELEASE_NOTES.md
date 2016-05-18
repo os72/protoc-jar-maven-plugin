@@ -3,7 +3,7 @@ protoc-jar-maven-plugin release notes
 
 #### 3.0.0-b3 (18-May-2016)
 * Upgrade to protoc 3.0.0-beta-3
-* Support shading of generated code for use with protobuf-java-shaded-[241|250|261] (type java-shaded)
+* Support shading of generated code for use with `protobuf-java-shaded-[241|250|261]` (type java-shaded)
 
 #### 3.0.0-b2.1 (16-Mar-2016)
 * Process proto files in input directory recursively
