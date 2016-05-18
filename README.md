@@ -4,13 +4,15 @@ protoc-jar-maven-plugin
 Protocol Buffers maven plugin - performs protobuf code generation using multi-platform protoc-jar executable JAR.
 Available on Maven Central: http://central.maven.org/maven2/com/github/os72/protoc-jar-maven-plugin/
 
-[![Maven Central](https://img.shields.io/badge/maven%20central-3.0.0--b2.1-brightgreen.svg)](http://search.maven.org/#artifactdetails|com.github.os72|protoc-jar-maven-plugin|3.0.0-b2.1|)
+[![Maven Central](https://img.shields.io/badge/maven%20central-3.0.0--b3-brightgreen.svg)](http://search.maven.org/#artifactdetails|com.github.os72|protoc-jar-maven-plugin|3.0.0-b3|)
 
 Simple maven plugin to compile .proto files using protoc-jar embedded protoc compiler, providing some portability across the major platforms (Linux, Mac/OSX, and Windows). At build time the plugin detects the platform and executes the corresponding protoc binary. Supports protoc versions 2.4.1, 2.5.0, 2.6.1, 3.0.0
 
-Based on
+See also
 * https://github.com/os72/protoc-jar
-* https://github.com/igor-petruk/protobuf-maven-plugin
+* https://github.com/os72/protobuf-java-shaded-241
+* https://github.com/os72/protobuf-java-shaded-250
+* https://github.com/os72/protobuf-java-shaded-261
 * https://github.com/google/protobuf
 
 #### Usage
@@ -22,7 +24,7 @@ Sample usage - compile in main cycle into target/generated-sources, add folder t
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.0.0-b2.1</version>
+	<version>3.0.0-b3</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -43,12 +45,12 @@ Sample usage - compile in main cycle into target/generated-sources, add folder t
 </plugin>
 ```
 
-Sample usage - generate python, don't alter pom:
+Sample usage - generate java shaded for use with protobuf-java-shaded-241, don't alter pom:
 ```xml
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.0.0-b2.1</version>
+	<version>3.0.0-b3</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -57,9 +59,9 @@ Sample usage - generate python, don't alter pom:
 			</goals>
 			<configuration>
 				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
-				<type>python</type>
+				<type>java-shaded</type>
 				<addSources>none</addSources>
-				<outputDirectory>src/main/python</outputDirectory>
+				<outputDirectory>src/main/java</outputDirectory>
 				<includeDirectories>
 					<include>src/main/protobuf</include>
 				</includeDirectories>
@@ -77,7 +79,7 @@ Sample usage - compile in test cycle, multiple output targets:
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.0.0-b2.1</version>
+	<version>3.0.0-b3</version>
 	<executions>
 		<execution>
 			<phase>generate-test-sources</phase>
@@ -109,3 +111,8 @@ Sample usage - compile in test cycle, multiple output targets:
 	</executions>
 </plugin>
 ```
+
+#### Credits
+
+Originally based on
+* https://github.com/igor-petruk/protobuf-maven-plugin
