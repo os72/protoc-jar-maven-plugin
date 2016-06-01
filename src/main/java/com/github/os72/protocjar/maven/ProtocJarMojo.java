@@ -237,37 +237,37 @@ public class ProtocJarMojo extends AbstractMojo
 	}
 
 	private void processTarget(OutputTarget target) throws MojoExecutionException {		
+		boolean shaded = false;
+		String targetType = target.type;
+		if (targetType.equals("java-shaded") || targetType.equals("java_shaded")) {
+			targetType = "java";
+			shaded = true;
+		}
+		
 		FileFilter fileFilter = new FileFilter(extension);
 		for (File input : inputDirectories) {
 			if (input == null) continue;
 			
 			if (input.exists() && input.isDirectory()) {
-				boolean shaded = false;
-				String targetType = target.type;
-				if (targetType.equals("java-shaded") || targetType.equals("java_shaded")) {
-					targetType = "java";
-					shaded = true;
-				}
-				
 				Collection<File> protoFiles = FileUtils.listFiles(input, fileFilter, TrueFileFilter.INSTANCE);
 				for (File protoFile : protoFiles) {
 					if (target.cleanOutputFolder || buildContext.hasDelta(protoFile.getPath())) processFile(protoFile, protocVersion, targetType, target.outputDirectory);
 					else getLog().info("Not changed " + protoFile);
 				}
-				
-				if (shaded) {
-					try {
-						getLog().info("    Shading (version " + protocVersion + "): " + target.outputDirectory);
-						Protoc.doShading(target.outputDirectory, protocVersion.replace(".", ""));
-					}
-					catch (IOException e) {
-						throw new MojoExecutionException("Error occurred during shading", e);
-					}
-				}
 			}
 			else {
 				if (input.exists()) getLog().warn(input + " is not a directory");
 				else getLog().warn(input + " does not exist");
+			}
+		}
+		
+		if (shaded) {
+			try {
+				getLog().info("    Shading (version " + protocVersion + "): " + target.outputDirectory);
+				Protoc.doShading(target.outputDirectory, protocVersion.replace(".", ""));
+			}
+			catch (IOException e) {
+				throw new MojoExecutionException("Error occurred during shading", e);
 			}
 		}
 		
