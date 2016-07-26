@@ -12,6 +12,7 @@ public class OutputTarget
 		addSources = "main";
 		cleanOutputFolder = false;
 		outputDirectory = null;
+		pluginPath = null;
 	}
 
 	/**
@@ -21,6 +22,13 @@ public class OutputTarget
 	 * @parameter property="type" default-value="java"
 	 */
 	String type;
+
+	/**
+	 * If this parameter is set, the path to the plugin to generate the specified {@link #type} is explicitly set.
+	 *
+	 * @parameter property="pluginPath"
+	 */
+	String pluginPath;
 
 	/**
 	 * Specifies whether to add outputDirectory to sources that are going to be compiled.
@@ -52,6 +60,6 @@ public class OutputTarget
 	File outputDirectory;
 
 	public String toString() {
-		return type + ": " + outputDirectory + " (add: " + addSources + ", clean: " + cleanOutputFolder + ")";
+		return type + ": " + outputDirectory + " (add: " + addSources + ", clean: " + cleanOutputFolder + ", plugin: " + pluginPath + ")";
 	}
 }
