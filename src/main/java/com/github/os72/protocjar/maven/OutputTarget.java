@@ -68,6 +68,17 @@ public class OutputTarget
      */
 	String outputOptions;
 
+	/*
+	 * If this parameter is set, the {@link #outputDirectory} defaults change to
+	 * {@code ${project.build.directory}/generated-sources/&lt;outputDirectorySuffix&gt;} or
+	 * {@code ${project.build.directory}/generated-test-sources/&lt;outputDirectorySuffix&gt;}
+	 * <p>
+	 * Ignored when {@link #outputDirectory} is given
+	 *
+	 * @parameter property="outputDirectorySuffix"
+	 */
+	String outputDirectorySuffix;
+
 	public String toString() {
 		return type + ": " + outputDirectory + " (add: " + addSources + ", clean: " + cleanOutputFolder + ", plugin: " + pluginPath + ", outputOptions: " + outputOptions + ")";
 	}
