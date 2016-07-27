@@ -126,6 +126,15 @@ public class ProtocJarMojo extends AbstractMojo
 	String type;
 
 	/**
+	 * If this parameter is set, the path to the plugin to generate the specified {@link #type} is explicitly set.
+	 * <p>
+	 * Ignored when {@code <outputTargets>} is given
+	 *
+	 * @parameter property="pluginPath"
+	 */
+	String pluginPath;
+
+	/**
 	 * This parameter lets you specify multiple protoc output targets.
 	 * OutputTarget parameters: "type", "addSources", "cleanOutputFolder", "outputDirectory".
 	 * Type options: "java", "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby", "js"
@@ -144,6 +153,13 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 		<addSources>none</addSources>
 	 * 		<cleanOutputFolder>false</cleanOutputFolder>
 	 * 		<outputDirectory>src/main/python</outputDirectory>
+	 * 	</outputTarget>
+	 * 	<outputTarget>
+	 * 		<type>dart</type>
+	 * 		<addSources>none</addSources>
+	 * 		<cleanOutputFolder>false</cleanOutputFolder>
+	 * 		<outputDirectory>lib/protobuf</outputDirectory>
+	 * 		<pluginPath>protoc-gen-dart.exe</pluginPath>
 	 * 	</outputTarget>
 	 * <outputTargets>
 	 * }
@@ -179,6 +195,7 @@ public class ProtocJarMojo extends AbstractMojo
 			target.addSources = addSources;
 			target.cleanOutputFolder = cleanOutputFolder;
 			target.outputDirectory = outputDirectory;
+			target.pluginPath = pluginPath;
 			outputTargets = new OutputTarget[] {target};
 		}
 
@@ -251,8 +268,12 @@ public class ProtocJarMojo extends AbstractMojo
 			if (input.exists() && input.isDirectory()) {
 				Collection<File> protoFiles = FileUtils.listFiles(input, fileFilter, TrueFileFilter.INSTANCE);
 				for (File protoFile : protoFiles) {
-					if (target.cleanOutputFolder || buildContext.hasDelta(protoFile.getPath())) processFile(protoFile, protocVersion, targetType, target.outputDirectory);
-					else getLog().info("Not changed " + protoFile);
+					if (target.cleanOutputFolder || buildContext.hasDelta(protoFile.getPath())) {
+						processFile(protoFile, protocVersion, targetType, target.pluginPath, target.outputDirectory);
+					}
+					else {
+						getLog().info("Not changed " + protoFile);
+					}
 				}
 			}
 			else {
@@ -287,9 +308,9 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private void processFile(File file, String version, String type, File outputDir) throws MojoExecutionException {
+	private void processFile(File file, String version, String type, String pluginPath, File outputDir) throws MojoExecutionException {
 		getLog().info("    Processing ("+ type + "): " + file.getName());
-		Collection<String> cmd = buildCommand(file, version, type, outputDir);
+		Collection<String> cmd = buildCommand(file, version, type, pluginPath, outputDir);
 		try {
 			int ret = 0;
 			if (protocCommand == null) ret = Protoc.runProtoc(cmd.toArray(new String[0]));
@@ -304,7 +325,7 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private Collection<String> buildCommand(File file, String version, String type, File outputDir) throws MojoExecutionException {
+	private Collection<String> buildCommand(File file, String version, String type, String pluginPath, File outputDir) throws MojoExecutionException {
 		Collection<String> cmd = new LinkedList<String>();
 		populateIncludes(cmd);
 		cmd.add("-I" + file.getParentFile().getAbsolutePath());
@@ -315,6 +336,9 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 		else {
 			cmd.add("--" + type + "_out=" + outputDir);
+			if (pluginPath != null) {
+				cmd.add("--plugin=protoc-gen-" + type + "=" + pluginPath);
+			}
 		}
 		cmd.add(file.toString());
 		if (version != null) cmd.add("-v" + version);
