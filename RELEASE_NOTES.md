@@ -1,6 +1,10 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.0.0-b4 (27-Jul-2016)
+* Upgrade to protoc 3.0.0-beta-4
+* Support protoc plugin path parameter ("pluginPath")
+
 #### 3.0.0-b3 (18-May-2016)
 * Upgrade to protoc 3.0.0-beta-3
 * Support shading of generated code for use with `protobuf-java-shaded-[241|250|261]` (type java-shaded)
