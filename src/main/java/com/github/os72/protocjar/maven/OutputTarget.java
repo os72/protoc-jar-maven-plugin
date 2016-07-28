@@ -1,6 +1,7 @@
 package com.github.os72.protocjar.maven;
 
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * Specifies output target
@@ -13,6 +14,7 @@ public class OutputTarget
 		cleanOutputFolder = false;
 		outputDirectory = null;
 		pluginPath = null;
+		flags = null;
 	}
 
 	/**
@@ -59,7 +61,14 @@ public class OutputTarget
 	 */
 	File outputDirectory;
 
+	/**
+	 * The --js_out flags.
+	 *
+	 * @parameter property="flags"
+     */
+	String[] flags;
+
 	public String toString() {
-		return type + ": " + outputDirectory + " (add: " + addSources + ", clean: " + cleanOutputFolder + ", plugin: " + pluginPath + ")";
+		return type + ": " + outputDirectory + " (add: " + addSources + ", clean: " + cleanOutputFolder + ", plugin: " + pluginPath + ", flags: " + Arrays.toString(flags) + ")";
 	}
 }
