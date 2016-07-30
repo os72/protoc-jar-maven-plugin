@@ -28,6 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -269,7 +270,7 @@ public class ProtocJarMojo extends AbstractMojo
 				Collection<File> protoFiles = FileUtils.listFiles(input, fileFilter, TrueFileFilter.INSTANCE);
 				for (File protoFile : protoFiles) {
 					if (target.cleanOutputFolder || buildContext.hasDelta(protoFile.getPath())) {
-						processFile(protoFile, protocVersion, targetType, target.pluginPath, target.outputDirectory);
+						processFile(protoFile, protocVersion, targetType, target.pluginPath, target.outputDirectory, target.flags);
 					}
 					else {
 						getLog().info("Not changed " + protoFile);
@@ -308,9 +309,9 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private void processFile(File file, String version, String type, String pluginPath, File outputDir) throws MojoExecutionException {
+	private void processFile(File file, String version, String type, String pluginPath, File outputDir, String[] flags) throws MojoExecutionException {
 		getLog().info("    Processing ("+ type + "): " + file.getName());
-		Collection<String> cmd = buildCommand(file, version, type, pluginPath, outputDir);
+		Collection<String> cmd = buildCommand(file, version, type, pluginPath, outputDir, flags);
 		try {
 			int ret = 0;
 			if (protocCommand == null) ret = Protoc.runProtoc(cmd.toArray(new String[0]));
@@ -325,7 +326,7 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private Collection<String> buildCommand(File file, String version, String type, String pluginPath, File outputDir) throws MojoExecutionException {
+	private Collection<String> buildCommand(File file, String version, String type, String pluginPath, File outputDir, String[] flags) throws MojoExecutionException {
 		Collection<String> cmd = new LinkedList<String>();
 		populateIncludes(cmd);
 		cmd.add("-I" + file.getParentFile().getAbsolutePath());
@@ -335,7 +336,12 @@ public class ProtocJarMojo extends AbstractMojo
 			cmd.add("--include_imports");
 		}
 		else {
-			cmd.add("--" + type + "_out=" + outputDir);
+			if (flags != null && flags.length != 0) {
+				cmd.add("--" + type + "_out=" + StringUtils.join(flags, ",") + ":" + outputDir);
+			} else {
+				cmd.add("--" + type + "_out=" + outputDir);
+			}
+
 			if (pluginPath != null) {
 				cmd.add("--plugin=protoc-gen-" + type + "=" + pluginPath);
 			}
