@@ -12,9 +12,9 @@ public class OutputTarget
 		type = "java";
 		addSources = "main";
 		cleanOutputFolder = false;
-		outputDirectory = null;
 		pluginPath = null;
-		flags = null;
+		outputDirectory = null;
+		outputOptions = null;
 	}
 
 	/**
@@ -24,13 +24,6 @@ public class OutputTarget
 	 * @parameter property="type" default-value="java"
 	 */
 	String type;
-
-	/**
-	 * If this parameter is set, the path to the plugin to generate the specified {@link #type} is explicitly set.
-	 *
-	 * @parameter property="pluginPath"
-	 */
-	String pluginPath;
 
 	/**
 	 * Specifies whether to add outputDirectory to sources that are going to be compiled.
@@ -52,6 +45,13 @@ public class OutputTarget
 	boolean cleanOutputFolder;
 
 	/**
+	 * Path to protoc plugin that generates code for the specified {@link #type}.
+	 *
+	 * @parameter property="pluginPath"
+	 */
+	String pluginPath;
+
+	/**
 	 * Output directory for the generated files. Defaults to
 	 * "${project.build.directory}/generated-sources/protobuf" or
 	 * "${project.build.directory}/generated-test-sources/protobuf"
@@ -62,13 +62,13 @@ public class OutputTarget
 	File outputDirectory;
 
 	/**
-	 * The --js_out flags.
+	 * Output options. Used for example with type "js" to create protoc argument --js_out=[OPTIONS]:output_dir
 	 *
-	 * @parameter property="flags"
+	 * @parameter property="outputOptions"
      */
-	String[] flags;
+	String outputOptions;
 
 	public String toString() {
-		return type + ": " + outputDirectory + " (add: " + addSources + ", clean: " + cleanOutputFolder + ", plugin: " + pluginPath + ", flags: " + Arrays.toString(flags) + ")";
+		return type + ": " + outputDirectory + " (add: " + addSources + ", clean: " + cleanOutputFolder + ", plugin: " + pluginPath + ", outputOptions: " + outputOptions + ")";
 	}
 }

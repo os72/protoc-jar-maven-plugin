@@ -28,7 +28,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -82,6 +81,26 @@ public class ProtocJarMojo extends AbstractMojo
 	private File[] includeDirectories;
 
 	/**
+	 * Specifies output type.
+	 * Options: "java",  "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby", "js"
+	 * <p>
+	 * Ignored when {@code <outputTargets>} is given
+	 * 
+	 * @parameter property="type" default-value="java"
+	 */
+	String type;
+
+	/**
+	 * Specifies whether to add outputDirectory to sources that are going to be compiled.
+	 * Options: "main", "test", "none" (default: "main")
+	 * <p>
+	 * Ignored when {@code <outputTargets>} is given
+	 * 
+	 * @parameter property="addSources" default-value="main"
+	 */
+	private String addSources;
+
+	/**
 	 * If this parameter is set to "true" output folder is cleaned prior to the
 	 * build. This will not let old and new classes coexist after package or
 	 * class rename in your IDE cache or after non-clean rebuild. Set this to
@@ -95,14 +114,13 @@ public class ProtocJarMojo extends AbstractMojo
 	private boolean cleanOutputFolder;
 
 	/**
-	 * Specifies whether to add outputDirectory to sources that are going to be compiled.
-	 * Options: "main", "test", "none" (default: "main")
+	 * Path to protoc plugin that generates code for the specified {@link #type}.
 	 * <p>
 	 * Ignored when {@code <outputTargets>} is given
-	 * 
-	 * @parameter property="addSources" default-value="main"
+	 *
+	 * @parameter property="pluginPath"
 	 */
-	private String addSources;
+	String pluginPath;
 
 	/**
 	 * Output directory for the generated java files. Defaults to
@@ -117,23 +135,13 @@ public class ProtocJarMojo extends AbstractMojo
 	private File outputDirectory;
 
 	/**
-	 * Specifies output type.
-	 * Options: "java",  "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby", "js"
-	 * <p>
-	 * Ignored when {@code <outputTargets>} is given
-	 * 
-	 * @parameter property="type" default-value="java"
-	 */
-	String type;
-
-	/**
-	 * If this parameter is set, the path to the plugin to generate the specified {@link #type} is explicitly set.
+	 * Output options. Used for example with type "js" to create protoc argument --js_out=[OPTIONS]:output_dir
 	 * <p>
 	 * Ignored when {@code <outputTargets>} is given
 	 *
-	 * @parameter property="pluginPath"
-	 */
-	String pluginPath;
+	 * @parameter property="outputOptions"
+     */
+	String outputOptions;
 
 	/**
 	 * This parameter lets you specify multiple protoc output targets.
@@ -195,8 +203,9 @@ public class ProtocJarMojo extends AbstractMojo
 			target.type = type;
 			target.addSources = addSources;
 			target.cleanOutputFolder = cleanOutputFolder;
-			target.outputDirectory = outputDirectory;
 			target.pluginPath = pluginPath;
+			target.outputDirectory = outputDirectory;
+			target.outputOptions = outputOptions;
 			outputTargets = new OutputTarget[] {target};
 		}
 
@@ -270,7 +279,7 @@ public class ProtocJarMojo extends AbstractMojo
 				Collection<File> protoFiles = FileUtils.listFiles(input, fileFilter, TrueFileFilter.INSTANCE);
 				for (File protoFile : protoFiles) {
 					if (target.cleanOutputFolder || buildContext.hasDelta(protoFile.getPath())) {
-						processFile(protoFile, protocVersion, targetType, target.pluginPath, target.outputDirectory, target.flags);
+						processFile(protoFile, protocVersion, targetType, target.pluginPath, target.outputDirectory, target.outputOptions);
 					}
 					else {
 						getLog().info("Not changed " + protoFile);
@@ -309,9 +318,9 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private void processFile(File file, String version, String type, String pluginPath, File outputDir, String[] flags) throws MojoExecutionException {
+	private void processFile(File file, String version, String type, String pluginPath, File outputDir, String outputOptions) throws MojoExecutionException {
 		getLog().info("    Processing ("+ type + "): " + file.getName());
-		Collection<String> cmd = buildCommand(file, version, type, pluginPath, outputDir, flags);
+		Collection<String> cmd = buildCommand(file, version, type, pluginPath, outputDir, outputOptions);
 		try {
 			int ret = 0;
 			if (protocCommand == null) ret = Protoc.runProtoc(cmd.toArray(new String[0]));
@@ -326,7 +335,7 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private Collection<String> buildCommand(File file, String version, String type, String pluginPath, File outputDir, String[] flags) throws MojoExecutionException {
+	private Collection<String> buildCommand(File file, String version, String type, String pluginPath, File outputDir, String outputOptions) throws MojoExecutionException {
 		Collection<String> cmd = new LinkedList<String>();
 		populateIncludes(cmd);
 		cmd.add("-I" + file.getParentFile().getAbsolutePath());
@@ -336,9 +345,10 @@ public class ProtocJarMojo extends AbstractMojo
 			cmd.add("--include_imports");
 		}
 		else {
-			if (flags != null && flags.length != 0) {
-				cmd.add("--" + type + "_out=" + StringUtils.join(flags, ",") + ":" + outputDir);
-			} else {
+			if (outputOptions != null) {
+				cmd.add("--" + type + "_out=" + outputOptions + ":" + outputDir);
+			}
+			else {
 				cmd.add("--" + type + "_out=" + outputDir);
 			}
 
