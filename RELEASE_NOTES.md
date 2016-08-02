@@ -1,6 +1,10 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.0.0 (2-Aug-2016)
+* Upgrade to protoc 3.0.0
+* Support output options parameter ("outputOptions")
+
 #### 3.0.0-b4 (27-Jul-2016)
 * Upgrade to protoc 3.0.0-beta-4
 * Support protoc plugin path parameter ("pluginPath")
