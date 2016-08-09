@@ -21,8 +21,10 @@ package com.github.os72.protocjar.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -277,14 +279,21 @@ public class ProtocJarMojo extends AbstractMojo
 			
 			if (input.exists() && input.isDirectory()) {
 				Collection<File> protoFiles = FileUtils.listFiles(input, fileFilter, TrueFileFilter.INSTANCE);
+				List<Collection<String>> cmds = new ArrayList<Collection<String>>(protoFiles.size());
+				List<File> protoFilesToProcess = new ArrayList<File>(protoFiles.size());
 				for (File protoFile : protoFiles) {
 					if (target.cleanOutputFolder || buildContext.hasDelta(protoFile.getPath())) {
-						processFile(protoFile, protocVersion, targetType, target.pluginPath, target.outputDirectory, target.outputOptions);
+						//processFile(protoFile, protocVersion, targetType, target.pluginPath, target.outputDirectory, target.outputOptions);
+						Collection<String> cmd = buildCommand(protoFile, protocVersion, targetType, target.pluginPath, target.outputDirectory, target.outputOptions);
+						cmds.add(cmd);
+						protoFilesToProcess.add(protoFile);
 					}
 					else {
 						getLog().info("Not changed " + protoFile);
 					}
 				}
+
+				processFiles(protoFilesToProcess, cmds);
 			}
 			else {
 				if (input.exists()) getLog().warn(input + " is not a directory");
@@ -318,20 +327,34 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private void processFile(File file, String version, String type, String pluginPath, File outputDir, String outputOptions) throws MojoExecutionException {
-		getLog().info("    Processing ("+ type + "): " + file.getName());
-		Collection<String> cmd = buildCommand(file, version, type, pluginPath, outputDir, outputOptions);
+	private void processFiles(List<File> files, List<Collection<String>> cmds) throws MojoExecutionException {
 		try {
-			int ret = 0;
-			if (protocCommand == null) ret = Protoc.runProtoc(cmd.toArray(new String[0]));
-			else ret = Protoc.runProtoc(protocCommand, cmd.toArray(new String[0]));
-			if (ret != 0) throw new MojoExecutionException("protoc-jar failed for " + file + ". Exit code " + ret);
+			String[][] arrayCmds = new String[cmds.size()][];
+			for (int i = 0; i < cmds.size(); i++) {
+				arrayCmds[i] = cmds.get(i).toArray(new String[0]);
+			}
+
+			int[] exitCodes;
+			if (protocCommand == null){
+				exitCodes = Protoc.runProtoc(arrayCmds);
+			}
+			else {
+				exitCodes = new int[cmds.size()];
+				for (int i = 0; i < cmds.size(); i++) {
+					exitCodes[i] = Protoc.runProtoc(protocCommand, arrayCmds[i]);
+				}
+			}
+
+			for (int i = 0; i < exitCodes.length; i++) {
+				int ret = exitCodes[i];
+				if (ret != 0) throw new MojoExecutionException("protoc-jar failed for " + files.get(i) + ". Exit code " + ret);
+			}
 		}
 		catch (InterruptedException e) {
 			throw new MojoExecutionException("Interrupted", e);
 		}
 		catch (IOException e) {
-			throw new MojoExecutionException("Unable to execute protoc-jar for " + file, e);
+			throw new MojoExecutionException("Unable to execute protoc-jar", e);
 		}
 	}
 
