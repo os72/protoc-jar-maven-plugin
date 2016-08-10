@@ -135,6 +135,17 @@ public class ProtocJarMojo extends AbstractMojo
 	private File outputDirectory;
 
 	/**
+	 * If this parameter is set, the {@link #outputDirectory} defaults change to
+	 * {@code ${project.build.directory}/generated-sources/&lt;outputDirectorySuffix&gt;} or
+	 * {@code ${project.build.directory}/generated-test-sources/&lt;outputDirectorySuffix&gt;}
+	 * <p>
+	 * Ignored when {@code <outputTargets>} or {@link #outputDirectory} is given
+	 *
+	 * @parameter property="outputDirectorySuffix"
+	 */
+	private String outputDirectorySuffix;
+
+	/**
 	 * Output options. Used for example with type "js" to create protoc argument --js_out=[OPTIONS]:output_dir
 	 * <p>
 	 * Ignored when {@code <outputTargets>} is given
@@ -203,6 +214,7 @@ public class ProtocJarMojo extends AbstractMojo
 			target.type = type;
 			target.addSources = addSources;
 			target.cleanOutputFolder = cleanOutputFolder;
+			target.outputDirectorySuffix = outputDirectorySuffix;
 			target.pluginPath = pluginPath;
 			target.outputDirectory = outputDirectory;
 			target.outputOptions = outputOptions;
@@ -215,6 +227,12 @@ public class ProtocJarMojo extends AbstractMojo
 			
 			if (target.outputDirectory == null) {
 				String subdir = "generated-" + ("test".equals(target.addSources) ? "test-" : "") + "sources";
+				if (target.outputDirectorySuffix != null && target.outputDirectorySuffix.length() > 0) {
+					subdir += File.separator + target.outputDirectorySuffix;
+				} else if (outputDirectorySuffix != null && outputDirectorySuffix.length() > 0) {
+					subdir += File.separator + outputDirectorySuffix;
+				}
+
 				target.outputDirectory = new File(project.getBuild().getDirectory() + File.separator + subdir + File.separator);
 			}
 		}
