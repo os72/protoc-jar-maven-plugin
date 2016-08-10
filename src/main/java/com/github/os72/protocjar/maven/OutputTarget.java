@@ -53,8 +53,8 @@ public class OutputTarget
 
 	/**
 	 * Output directory for the generated files. Defaults to
-	 * "${project.build.directory}/generated-sources/protobuf" or
-	 * "${project.build.directory}/generated-test-sources/protobuf"
+	 * "${project.build.directory}/generated-sources" or
+	 * "${project.build.directory}/generated-test-sources"
 	 * depending on the addSources parameter
 	 * 
 	 * @parameter property="outputDirectory"
@@ -62,22 +62,21 @@ public class OutputTarget
 	File outputDirectory;
 
 	/**
+	 * If this parameter is set, append its value to the {@link #outputDirectory} path
+	 * For example, value "protobuf" will set output directory to
+	 * "${project.build.directory}/generated-sources/protobuf" or
+	 * "${project.build.directory}/generated-test-sources/protobuf"
+	 *
+	 * @parameter property="outputDirectorySuffix"
+	 */
+	String outputDirectorySuffix;
+
+	/**
 	 * Output options. Used for example with type "js" to create protoc argument --js_out=[OPTIONS]:output_dir
 	 *
 	 * @parameter property="outputOptions"
      */
 	String outputOptions;
-
-	/*
-	 * If this parameter is set, the {@link #outputDirectory} defaults change to
-	 * {@code ${project.build.directory}/generated-sources/&lt;outputDirectorySuffix&gt;} or
-	 * {@code ${project.build.directory}/generated-test-sources/&lt;outputDirectorySuffix&gt;}
-	 * <p>
-	 * Ignored when {@link #outputDirectory} is given
-	 *
-	 * @parameter property="outputDirectorySuffix"
-	 */
-	String outputDirectorySuffix;
 
 	public String toString() {
 		return type + ": " + outputDirectory + " (add: " + addSources + ", clean: " + cleanOutputFolder + ", plugin: " + pluginPath + ", outputOptions: " + outputOptions + ")";

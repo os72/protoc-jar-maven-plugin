@@ -120,7 +120,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 *
 	 * @parameter property="pluginPath"
 	 */
-	String pluginPath;
+	private String pluginPath;
 
 	/**
 	 * Output directory for the generated java files. Defaults to
@@ -135,11 +135,12 @@ public class ProtocJarMojo extends AbstractMojo
 	private File outputDirectory;
 
 	/**
-	 * If this parameter is set, the {@link #outputDirectory} defaults change to
-	 * {@code ${project.build.directory}/generated-sources/&lt;outputDirectorySuffix&gt;} or
-	 * {@code ${project.build.directory}/generated-test-sources/&lt;outputDirectorySuffix&gt;}
+	 * If this parameter is set, append its value to the {@link #outputDirectory} path
+	 * For example, value "protobuf" will set output directory to
+	 * "${project.build.directory}/generated-sources/protobuf" or
+	 * "${project.build.directory}/generated-test-sources/protobuf"
 	 * <p>
-	 * Ignored when {@code <outputTargets>} or {@link #outputDirectory} is given
+	 * Ignored when {@code <outputTargets>} is given
 	 *
 	 * @parameter property="outputDirectorySuffix"
 	 */
@@ -152,7 +153,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 *
 	 * @parameter property="outputOptions"
      */
-	String outputOptions;
+	private String outputOptions;
 
 	/**
 	 * This parameter lets you specify multiple protoc output targets.
@@ -214,9 +215,9 @@ public class ProtocJarMojo extends AbstractMojo
 			target.type = type;
 			target.addSources = addSources;
 			target.cleanOutputFolder = cleanOutputFolder;
-			target.outputDirectorySuffix = outputDirectorySuffix;
 			target.pluginPath = pluginPath;
 			target.outputDirectory = outputDirectory;
+			target.outputDirectorySuffix = outputDirectorySuffix;
 			target.outputOptions = outputOptions;
 			outputTargets = new OutputTarget[] {target};
 		}
@@ -227,13 +228,11 @@ public class ProtocJarMojo extends AbstractMojo
 			
 			if (target.outputDirectory == null) {
 				String subdir = "generated-" + ("test".equals(target.addSources) ? "test-" : "") + "sources";
-				if (target.outputDirectorySuffix != null && target.outputDirectorySuffix.length() > 0) {
-					subdir += File.separator + target.outputDirectorySuffix;
-				} else if (outputDirectorySuffix != null && outputDirectorySuffix.length() > 0) {
-					subdir += File.separator + outputDirectorySuffix;
-				}
-
 				target.outputDirectory = new File(project.getBuild().getDirectory() + File.separator + subdir + File.separator);
+			}
+			
+			if (target.outputDirectorySuffix != null) {
+				target.outputDirectory = new File(target.outputDirectory, target.outputDirectorySuffix);
 			}
 		}
 		
