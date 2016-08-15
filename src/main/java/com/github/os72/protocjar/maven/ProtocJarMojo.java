@@ -239,8 +239,18 @@ public class ProtocJarMojo extends AbstractMojo
 		performProtoCompilation();
 	}
 
-	private void performProtoCompilation() throws MojoExecutionException {	
+	private void performProtoCompilation() throws MojoExecutionException {
 		getLog().info("Protoc version: " + protocVersion);
+		if (protocCommand == null) {
+			try {
+				File protocFile = Protoc.extractProtoc(protocVersion.replace(".", ""));
+				protocCommand = protocFile.getAbsolutePath();
+			}
+			catch (IOException e) {
+				throw new MojoExecutionException("Error extracting protoc for version " + protocVersion, e);
+			}
+		}
+		getLog().info("Protoc command: " + protocCommand);
 		
 		if (includeDirectories != null && includeDirectories.length > 0) {
 			getLog().info("Include directories:");
