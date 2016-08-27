@@ -21,8 +21,10 @@ package com.github.os72.protocjar.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -79,6 +81,13 @@ public class ProtocJarMojo extends AbstractMojo
 	 * @parameter property="includeDirectories"
 	 */
 	private File[] includeDirectories;
+
+	/**
+	 * If "true", extract the included google.protobuf standard types and add them to protoc import path.
+	 * 
+	 * @parameter property="includeStdTypes" default-value="false"
+	 */
+	boolean includeStdTypes;
 
 	/**
 	 * Specifies output type.
@@ -243,7 +252,7 @@ public class ProtocJarMojo extends AbstractMojo
 		getLog().info("Protoc version: " + protocVersion);
 		if (protocCommand == null) {
 			try {
-				File protocFile = Protoc.extractProtoc(protocVersion.replace(".", ""));
+				File protocFile = Protoc.extractProtoc(protocVersion.replace(".", ""), includeStdTypes);
 				protocCommand = protocFile.getAbsolutePath();
 			}
 			catch (IOException e) {
@@ -252,18 +261,29 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 		getLog().info("Protoc command: " + protocCommand);
 		
-		if (includeDirectories != null && includeDirectories.length > 0) {
-			getLog().info("Include directories:");
-			for (File include : includeDirectories) getLog().info("    " + include);
+		if (inputDirectories == null || inputDirectories.length == 0) {
+			File inputDir = new File(project.getBasedir().getAbsolutePath() + DEFAULT_INPUT_DIR);
+			inputDirectories = new File[] { inputDir };
 		}
-		
 		getLog().info("Input directories:");
 		for (File input : inputDirectories) getLog().info("    " + input);
 		
-		if (includeDirectories == null || inputDirectories.length == 0) {
-			File inputDir = new File(project.getBasedir().getAbsolutePath() + DEFAULT_INPUT_DIR);
-			getLog().info("    " + inputDir + " (using default)");
-			inputDirectories = new File[] { inputDir };
+		if (includeStdTypes) {
+			File stdTypeDir = new File(new File(protocCommand).getParentFile().getParentFile(), "include");
+			if (includeDirectories != null && includeDirectories.length > 0) {
+				List<File> includeDirList = new ArrayList<File>();
+				includeDirList.add(stdTypeDir);
+				includeDirList.addAll(Arrays.asList(includeDirectories));
+				includeDirectories = includeDirList.toArray(new File[0]);
+			}
+			else {
+				includeDirectories = new File[] { stdTypeDir };
+			}
+		}
+		
+		if (includeDirectories != null && includeDirectories.length > 0) {
+			getLog().info("Include directories:");
+			for (File include : includeDirectories) getLog().info("    " + include);
 		}
 		
 		getLog().info("Output targets:");
@@ -363,7 +383,7 @@ public class ProtocJarMojo extends AbstractMojo
 	}
 
 	private Collection<String> buildCommand(File file, String version, String type, String pluginPath, File outputDir, String outputOptions) throws MojoExecutionException {
-		Collection<String> cmd = new LinkedList<String>();
+		Collection<String> cmd = new ArrayList<String>();
 		populateIncludes(cmd);
 		cmd.add("-I" + file.getParentFile().getAbsolutePath());
 		if ("descriptor".equals(type)) {
