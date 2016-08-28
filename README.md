@@ -4,7 +4,7 @@ protoc-jar-maven-plugin
 Protocol Buffers maven plugin - performs protobuf code generation using multi-platform protoc-jar executable JAR.
 Available on Maven Central: http://central.maven.org/maven2/com/github/os72/protoc-jar-maven-plugin/
 
-[![Maven Central](https://img.shields.io/badge/maven%20central-3.0.0-brightgreen.svg)](http://search.maven.org/#artifactdetails|com.github.os72|protoc-jar-maven-plugin|3.0.0|)
+[![Maven Central](https://img.shields.io/badge/maven%20central-3.0.0.1-brightgreen.svg)](http://search.maven.org/#artifactdetails|com.github.os72|protoc-jar-maven-plugin|3.0.0.1|)
 
 Simple maven plugin to compile .proto files using protoc-jar embedded protoc compiler, providing some portability across the major platforms (Linux, Mac/OSX, and Windows). At build time the plugin detects the platform and executes the corresponding protoc binary. Supports protoc versions 2.4.1, 2.5.0, 2.6.1, 3.0.0
 
@@ -24,7 +24,7 @@ Sample usage - compile in main cycle into target/generated-sources, add folder t
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.0.0</version>
+	<version>3.0.0.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -32,10 +32,7 @@ Sample usage - compile in main cycle into target/generated-sources, add folder t
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
-				<includeDirectories>
-					<include>src/main/protobuf</include>
-				</includeDirectories>
+				<protocVersion>3.0.0</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
 				<inputDirectories>
 					<include>src/main/protobuf</include>
 				</inputDirectories>
@@ -45,12 +42,12 @@ Sample usage - compile in main cycle into target/generated-sources, add folder t
 </plugin>
 ```
 
-Sample usage - generate java shaded for use with protobuf-java-shaded-241, don't alter pom:
+Sample usage - compile in main cycle into target/generated-sources, add folder to pom, include google.protobuf standard types, include additional imports:
 ```xml
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.0.0</version>
+	<version>3.0.0.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -58,12 +55,10 @@ Sample usage - generate java shaded for use with protobuf-java-shaded-241, don't
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
-				<type>java-shaded</type>
-				<addSources>none</addSources>
-				<outputDirectory>src/main/java</outputDirectory>
+				<protocVersion>3.0.0</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
+				<includeStdTypes>true</includeStdTypes>
 				<includeDirectories>
-					<include>src/main/protobuf</include>
+					<include>src/main/more_proto_imports</include>
 				</includeDirectories>
 				<inputDirectories>
 					<include>src/main/protobuf</include>
@@ -79,7 +74,7 @@ Sample usage - compile in test cycle, multiple output targets:
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.0.0</version>
+	<version>3.0.0.1</version>
 	<executions>
 		<execution>
 			<phase>generate-test-sources</phase>
@@ -88,9 +83,6 @@ Sample usage - compile in test cycle, multiple output targets:
 			</goals>
 			<configuration>
 				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
-				<includeDirectories>
-					<include>src/test/resources</include>
-				</includeDirectories>
 				<inputDirectories>
 					<include>src/test/resources</include>
 				</inputDirectories>
@@ -106,6 +98,32 @@ Sample usage - compile in test cycle, multiple output targets:
 						<outputDirectory>src/test/resources</outputDirectory>
 					</outputTarget>
 				</outputTargets>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+```
+
+Sample usage - generate java shaded for use with protobuf-java-shaded-241, don't alter pom:
+```xml
+<plugin>
+	<groupId>com.github.os72</groupId>
+	<artifactId>protoc-jar-maven-plugin</artifactId>
+	<version>3.0.0.1</version>
+	<executions>
+		<execution>
+			<phase>generate-sources</phase>
+			<goals>
+				<goal>run</goal>
+			</goals>
+			<configuration>
+				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
+				<type>java-shaded</type>
+				<addSources>none</addSources>
+				<outputDirectory>src/main/java</outputDirectory>
+				<inputDirectories>
+					<include>src/main/protobuf</include>
+				</inputDirectories>
 			</configuration>
 		</execution>
 	</executions>

@@ -1,6 +1,11 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.0.0.1 (28-Aug-2016)
+* Package and support google.protobuf standard types out of the box (parameter "includeStdTypes")
+* Support output directory suffix (parameter "outputDirectorySuffix")
+* Extract protoc only once per execution (not for each file)
+
 #### 3.0.0 (2-Aug-2016)
 * Upgrade to protoc 3.0.0
 * Support output options parameter ("outputOptions")
