@@ -65,7 +65,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="protocVersion"
 	 */
-	String protocVersion;
+	private String protocVersion;
 
 	/**
 	 * Input directories that have *.proto files (or the configured extension).
@@ -87,7 +87,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="includeStdTypes" default-value="false"
 	 */
-	boolean includeStdTypes;
+	private boolean includeStdTypes;
 
 	/**
 	 * Specifies output type.
@@ -97,7 +97,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="type" default-value="java"
 	 */
-	String type;
+	private String type;
 
 	/**
 	 * Specifies whether to add outputDirectory to sources that are going to be compiled.
@@ -166,7 +166,7 @@ public class ProtocJarMojo extends AbstractMojo
 
 	/**
 	 * This parameter lets you specify multiple protoc output targets.
-	 * OutputTarget parameters: "type", "addSources", "cleanOutputFolder", "outputDirectory".
+	 * OutputTarget parameters: "type", "addSources", "cleanOutputFolder", "outputDirectory", "outputDirectorySuffix", "outputOptions", "pluginPath".
 	 * Type options: "java", "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby", "js"
 	 * 
 	 * <pre>
