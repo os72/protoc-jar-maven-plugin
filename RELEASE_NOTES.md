@@ -1,6 +1,10 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.1.0 (8-Oct-2016)
+* Upgrade to protoc 3.1.0
+* Map 3.0.0 to 3.1.0 for backward compatibility
+
 #### 3.0.0.1 (28-Aug-2016)
 * Package and support google.protobuf standard types out of the box (parameter "includeStdTypes")
 * Support output directory suffix (parameter "outputDirectorySuffix")
