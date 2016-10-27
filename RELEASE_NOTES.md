@@ -1,6 +1,9 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.1.0.1 (27-Oct-2016)
+* Upgrade Linux 3.1.0 binary to protoc 3.1.0-build2 (issue #16)
+
 #### 3.1.0 (8-Oct-2016)
 * Upgrade to protoc 3.1.0
 * Map 3.0.0 to 3.1.0 for backward compatibility
