@@ -17,7 +17,7 @@ See also
 
 #### Usage
 
-Documentation: see http://os72.github.io/protoc-jar-maven-plugin/, particular [run-mojo](http://os72.github.io/protoc-jar-maven-plugin/run-mojo.html).
+Documentation: see http://os72.github.io/protoc-jar-maven-plugin/, in particular [run-mojo](http://os72.github.io/protoc-jar-maven-plugin/run-mojo.html)
 
 Sample usage - compile in main cycle into `target/generated-sources`, add folder to pom:
 ```xml
