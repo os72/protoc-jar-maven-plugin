@@ -45,11 +45,19 @@ public class OutputTarget
 	boolean cleanOutputFolder;
 
 	/**
-	 * Path to protoc plugin that generates code for the specified {@link #type}.
+	 * Path to the protoc plugin that generates code for the specified {@link #type}.
 	 *
 	 * @parameter property="pluginPath"
 	 */
 	String pluginPath;
+
+	/**
+	 * Maven artifact coordinates of the protoc plugin that generates code for the specified {@link #type}.
+	 * Format: "groupId:artifactId:version" (eg, "io.grpc:protoc-gen-grpc-java:1.0.1")
+	 *
+	 * @parameter property="pluginArtifact"
+	 */
+	String pluginArtifact;
 
 	/**
 	 * Output directory for the generated files. Defaults to
