@@ -270,6 +270,7 @@ public class ProtocJarMojo extends AbstractMojo
 			target.addSources = addSources;
 			target.cleanOutputFolder = cleanOutputFolder;
 			target.pluginPath = pluginPath;
+			target.pluginArtifact = pluginArtifact;
 			target.outputDirectory = outputDirectory;
 			target.outputDirectorySuffix = outputDirectorySuffix;
 			target.outputOptions = outputOptions;
@@ -294,8 +295,6 @@ public class ProtocJarMojo extends AbstractMojo
 	}
 
 	private void performProtoCompilation() throws MojoExecutionException {
-		//getLog().info("Protoc version: " + protocVersion);
-		
 		String protocTemp = null;
 		if ((protocCommand == null && protocArtifact == null) || includeStdTypes) {
 			if (protocVersion == null || protocVersion.length() < 1) protocVersion = ProtocVersion.PROTOC_VERSION;
@@ -315,19 +314,6 @@ public class ProtocJarMojo extends AbstractMojo
 		if (protocCommand == null && protocArtifact != null) {
 			protocCommand = resolveArtifact(protocArtifact).getAbsolutePath();
 		}
-		
-		/*
-		if (protocCommand == null) {
-			try {
-				File protocFile = Protoc.extractProtoc(protocVersion.replace(".", ""), includeStdTypes);
-				protocCommand = protocFile.getAbsolutePath();
-			}
-			catch (IOException e) {
-				throw new MojoExecutionException("Error extracting protoc for version " + protocVersion, e);
-			}
-		}
-		*/
-		
 		getLog().info("Protoc command: " + protocCommand);
 		
 		if (inputDirectories == null || inputDirectories.length == 0) {
@@ -362,6 +348,10 @@ public class ProtocJarMojo extends AbstractMojo
 	}
 
 	private void preprocessTarget(OutputTarget target) throws MojoExecutionException {
+		if (target.pluginArtifact != null && target.pluginArtifact.length() > 0) {
+			target.pluginPath = resolveArtifact(target.pluginArtifact).getAbsolutePath();
+		}
+		
 		File f = target.outputDirectory;
 		if (!f.exists()) {
 			getLog().info(f + " does not exist. Creating...");
@@ -469,6 +459,7 @@ public class ProtocJarMojo extends AbstractMojo
 			}
 
 			if (pluginPath != null) {
+				getLog().info("    Plugin path: " + pluginPath);
 				cmd.add("--plugin=protoc-gen-" + type + "=" + pluginPath);
 			}
 		}
@@ -489,17 +480,13 @@ public class ProtocJarMojo extends AbstractMojo
 		try {
 			Properties detectorProps = new Properties();
 			new PlatformDetector().doDetect(detectorProps);
-			getLog().info("*** "+detectorProps);
-
-			String[] as = artifactSpec.split(":");
 			String platform = detectorProps.getProperty("os.detected.classifier");
-			Artifact artifact = artifactFactory.createDependencyArtifact(as[0], as[1], VersionRange.createFromVersionSpec(as[2]), "exe", platform, Artifact.SCOPE_RUNTIME);
-
-			artifactResolver.resolve(artifact, remoteRepositories, localRepository);
-			File artifactFile = artifact.getFile();
-			getLog().info("*** "+artifactFile);
 			
-			return artifactFile;
+			getLog().info("Resolving artifact: " + artifactSpec + ", platform: " + platform);
+			String[] as = artifactSpec.split(":");
+			Artifact artifact = artifactFactory.createDependencyArtifact(as[0], as[1], VersionRange.createFromVersionSpec(as[2]), "exe", platform, Artifact.SCOPE_RUNTIME);
+			artifactResolver.resolve(artifact, remoteRepositories, localRepository);
+			return artifact.getFile();
 		}
 		catch (Exception e) {
 			throw new MojoExecutionException("Error resolving artifact: " + artifactSpec, e);
