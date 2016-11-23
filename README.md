@@ -19,7 +19,7 @@ See also
 
 Documentation: see http://os72.github.io/protoc-jar-maven-plugin/, in particular [run-mojo](http://os72.github.io/protoc-jar-maven-plugin/run-mojo.html)
 
-Sample usage - compile in main cycle into `target/generated-sources`, add folder to pom:
+Sample usage - compile in main cycle into `target/generated-sources`, add generated sources to project:
 ```xml
 <plugin>
 	<groupId>com.github.os72</groupId>
@@ -42,7 +42,7 @@ Sample usage - compile in main cycle into `target/generated-sources`, add folder
 </plugin>
 ```
 
-Sample usage - compile in main cycle into `target/generated-sources`, add folder to pom, include `google.protobuf` standard types, include additional imports:
+Sample usage - compile in main cycle into `target/generated-sources`, add add generated sources to project, include `google.protobuf` standard types, include additional imports:
 ```xml
 <plugin>
 	<groupId>com.github.os72</groupId>
@@ -69,7 +69,7 @@ Sample usage - compile in main cycle into `target/generated-sources`, add folder
 </plugin>
 ```
 
-Sample usage - compile in test cycle, multiple output targets:
+Sample usage - compile in test cycle, multiple output targets, don't alter project (`<addSources>: none`):
 ```xml
 <plugin>
 	<groupId>com.github.os72</groupId>
@@ -104,7 +104,7 @@ Sample usage - compile in test cycle, multiple output targets:
 </plugin>
 ```
 
-Sample usage - generate java shaded for use with `protobuf-java-shaded-241`, don't alter pom:
+Sample usage - generate java shaded for use with `protobuf-java-shaded-241`, don't alter project:
 ```xml
 <plugin>
 	<groupId>com.github.os72</groupId>
