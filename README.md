@@ -42,7 +42,7 @@ Sample usage - compile in main cycle into `target/generated-sources`, add genera
 </plugin>
 ```
 
-Sample usage - compile in main cycle into `target/generated-sources`, add add generated sources to project, include `google.protobuf` standard types, include additional imports:
+Sample usage - compile in main cycle into `target/generated-sources`, add generated sources to project, include `google.protobuf` standard types, include additional imports:
 ```xml
 <plugin>
 	<groupId>com.github.os72</groupId>
