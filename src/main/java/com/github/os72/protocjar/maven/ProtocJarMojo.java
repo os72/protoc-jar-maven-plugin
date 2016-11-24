@@ -47,7 +47,7 @@ import com.github.os72.protocjar.Protoc;
 import com.github.os72.protocjar.ProtocVersion;
 
 /**
- * Compiles .proto files using protoc-jar embedded protoc compiler (external protoc executable also supported)
+ * Compiles .proto files using protoc-jar embedded protoc compiler. Also supports pre-installed protoc binary, and downloading binaries (protoc and protoc plugins) from maven repo
  * 
  * @goal run
  * @phase generate-sources
