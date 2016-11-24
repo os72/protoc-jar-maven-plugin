@@ -173,7 +173,7 @@ public class ProtocJarMojo extends AbstractMojo
 
 	/**
 	 * This parameter lets you specify multiple protoc output targets.
-	 * OutputTarget parameters: "type", "addSources", "cleanOutputFolder", "outputDirectory", "outputDirectorySuffix", "outputOptions", "pluginPath".
+	 * OutputTarget parameters: "type", "addSources", "cleanOutputFolder", "outputDirectory", "outputDirectorySuffix", "outputOptions", "pluginPath", "pluginArtifact".
 	 * Type options: "java", "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby", "js"
 	 * 
 	 * <pre>
@@ -182,19 +182,22 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 	<outputTarget>
 	 * 		<type>java</type>
 	 * 		<addSources>none</addSources>
-	 * 		<cleanOutputFolder>false</cleanOutputFolder>
 	 * 		<outputDirectory>src/main/java</outputDirectory>
+	 * 	</outputTarget>
+	 * 	<outputTarget>
+	 * 		<type>grpc-java</type>
+	 * 		<addSources>none</addSources>
+	 * 		<outputDirectory>src/main/java</outputDirectory>
+	 * 		<pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.1</pluginArtifact>
 	 * 	</outputTarget>
 	 * 	<outputTarget>
 	 * 		<type>python</type>
 	 * 		<addSources>none</addSources>
-	 * 		<cleanOutputFolder>false</cleanOutputFolder>
 	 * 		<outputDirectory>src/main/python</outputDirectory>
 	 * 	</outputTarget>
 	 * 	<outputTarget>
 	 * 		<type>dart</type>
 	 * 		<addSources>none</addSources>
-	 * 		<cleanOutputFolder>false</cleanOutputFolder>
 	 * 		<outputDirectory>lib/protobuf</outputDirectory>
 	 * 		<pluginPath>protoc-gen-dart.exe</pluginPath>
 	 * 	</outputTarget>
