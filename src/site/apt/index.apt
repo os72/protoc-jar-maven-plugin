@@ -9,7 +9,8 @@ protoc-jar-maven-plugin
 
 * Goals Overview
 
-    * {{{./run-mojo.html}protoc-jar:run}} Compiles .proto files using protoc-jar embedded protoc compiler (external protoc executable also supported)
+    * {{{./run-mojo.html}protoc-jar:run}} Compiles .proto files using protoc-jar embedded protoc compiler. Supports protoc versions 2.4.1, 2.5.0, 2.6.1, 3.1.0.
+    Also supports pre-installed protoc binary, and downloading binaries (protoc and protoc plugins) from maven repo
 
 * Usage
   
@@ -20,13 +21,13 @@ protoc-jar-maven-plugin
     * generate-test-sources (test cycle)
 
   \
-  Sample usage - compile in main cycle into target/generated-sources, add folder to pom
+  Sample usage - compile in main cycle into target/generated-sources, add generated sources to project
 
 +---+
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.0.0.1</version>
+	<version>3.1.0.2</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -34,7 +35,7 @@ protoc-jar-maven-plugin
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocVersion>3.0.0</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
+				<protocVersion>3.1.0</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.1.0 -->
 				<inputDirectories>
 					<include>src/main/protobuf</include>
 				</inputDirectories>
@@ -45,13 +46,13 @@ protoc-jar-maven-plugin
 +---+
 
   \
-  Sample usage - compile in main cycle into target/generated-sources, add folder to pom, include google.protobuf standard types, include additional imports
+  Sample usage - compile in main cycle into target/generated-sources, add generated sources to project, include google.protobuf standard types, include additional imports
 
 +---+
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.0.0.1</version>
+	<version>3.1.0.2</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -59,7 +60,7 @@ protoc-jar-maven-plugin
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocVersion>3.0.0</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
+				<protocVersion>3.1.0</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.1.0 -->
 				<includeStdTypes>true</includeStdTypes>
 				<includeDirectories>
 					<include>src/main/more_proto_imports</include>
@@ -74,13 +75,13 @@ protoc-jar-maven-plugin
 +---+
 
   \
-  Sample usage - compile in main cycle into src/main/java, don't alter pom
+  Sample usage - download protoc and plugin binaries from maven repo, multiple output targets (example: gRPC):
 
 +---+
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.0.0.1</version>
+	<version>3.1.0.2</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -88,7 +89,41 @@ protoc-jar-maven-plugin
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
+				<protocArtifact>com.google.protobuf:protoc:3.1.0</protocArtifact>
+				<inputDirectories>
+					<include>src/main/resources</include>
+				</inputDirectories>
+				<outputTargets>
+					<outputTarget>
+						<type>java</type>
+					</outputTarget>
+					<outputTarget>
+						<type>grpc-java</type>
+						<pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.1</pluginArtifact>
+					</outputTarget>
+				</outputTargets>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
++---+
+
+  \
+  Sample usage - compile in main cycle into src/main/java, don't alter project
+
++---+
+<plugin>
+	<groupId>com.github.os72</groupId>
+	<artifactId>protoc-jar-maven-plugin</artifactId>
+	<version>3.1.0.2</version>
+	<executions>
+		<execution>
+			<phase>generate-sources</phase>
+			<goals>
+				<goal>run</goal>
+			</goals>
+			<configuration>
+				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.1.0 -->
 				<addSources>none</addSources>
 				<outputDirectory>src/main/java</outputDirectory>
 				<inputDirectories>
@@ -101,13 +136,13 @@ protoc-jar-maven-plugin
 +---+
 
   \
-  Sample usage - compile in test cycle into src/test/java, don't alter pom
+  Sample usage - compile in test cycle into src/test/java, don't alter project
 
 +---+
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.0.0.1</version>
+	<version>3.1.0.2</version>
 	<executions>
 		<execution>
 			<phase>generate-test-sources</phase>
@@ -115,7 +150,7 @@ protoc-jar-maven-plugin
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
+				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.1.0 -->
 				<addSources>none</addSources>
 				<outputDirectory>src/test/java</outputDirectory>
 				<inputDirectories>
@@ -128,13 +163,13 @@ protoc-jar-maven-plugin
 +---+
 
   \
-  Sample usage - generate python, don't alter pom
+  Sample usage - generate python, don't alter project
 
 +---+
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.0.0.1</version>
+	<version>3.1.0.2</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -142,7 +177,7 @@ protoc-jar-maven-plugin
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
+				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.1.0 -->
 				<type>python</type>
 				<addSources>none</addSources>
 				<outputDirectory>src/main/python</outputDirectory>
@@ -162,7 +197,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.0.0.1</version>
+	<version>3.1.0.2</version>
 	<executions>
 		<execution>
 			<phase>generate-test-sources</phase>
@@ -170,7 +205,7 @@ protoc-jar-maven-plugin
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
+				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.1.0 -->
 				<inputDirectories>
 					<include>src/test/resources</include>
 				</inputDirectories>
@@ -193,13 +228,13 @@ protoc-jar-maven-plugin
 +---+
 
   \
-  Sample usage - generate java shaded for use with protobuf-java-shaded-241, don't alter pom:
+  Sample usage - generate java shaded for use with protobuf-java-shaded-241, don't alter project:
 
 +---+
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.0.0.1</version>
+	<version>3.1.0.2</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -207,7 +242,7 @@ protoc-jar-maven-plugin
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.0.0 -->
+				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.1.0 -->
 				<type>java-shaded</type>
 				<addSources>none</addSources>
 				<outputDirectory>src/main/java</outputDirectory>
