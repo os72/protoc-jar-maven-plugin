@@ -26,8 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
-import kr.motd.maven.os.Detector;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -42,6 +40,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import com.github.os72.protocjar.PlatformDetector;
 import com.github.os72.protocjar.Protoc;
 import com.github.os72.protocjar.ProtocVersion;
 
@@ -481,7 +480,7 @@ public class ProtocJarMojo extends AbstractMojo
 	private File resolveArtifact(String artifactSpec) throws MojoExecutionException {
 		try {
 			Properties detectorProps = new Properties();
-			new PlatformDetector().doDetect(detectorProps);
+			new PlatformDetector().detect(detectorProps, null);
 			String platform = detectorProps.getProperty("os.detected.classifier");
 			
 			getLog().info("Resolving artifact: " + artifactSpec + ", platform: " + platform);
@@ -509,23 +508,6 @@ public class ProtocJarMojo extends AbstractMojo
 
 		public boolean accept(File file) {
 			return file.getName().endsWith(extension);
-		}
-	}
-
-	class PlatformDetector extends Detector
-	{
-		void doDetect(Properties props) {
-	    	detect(props, null);
-		}
-
-		@Override
-		protected void log(String msg) {
-			//System.out.println(msg);
-		}
-
-		@Override
-		protected void logProperty(String name, String value) {
-			//log(name + ": " + value);
 		}
 	}
 }
