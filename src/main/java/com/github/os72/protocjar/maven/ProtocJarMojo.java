@@ -16,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.github.os72.protocjar.maven;
 
 import java.io.File;
@@ -58,7 +57,7 @@ public class ProtocJarMojo extends AbstractMojo
 	private static final String DEFAULT_INPUT_DIR = "/src/main/protobuf/".replace('/', File.separatorChar);
 
     /**
-	 * Specifies the protoc version.
+	 * Specifies the protoc version (default: latest version).
 	 * 
 	 * @parameter property="protocVersion"
 	 */
@@ -300,11 +299,11 @@ public class ProtocJarMojo extends AbstractMojo
 	private void performProtoCompilation() throws MojoExecutionException {
 		String protocTemp = null;
 		if ((protocCommand == null && protocArtifact == null) || includeStdTypes) {
-			if (protocVersion == null || protocVersion.length() < 1) protocVersion = ProtocVersion.PROTOC_VERSION;
+			if (protocVersion == null || protocVersion.length() < 1) protocVersion = ProtocVersion.PROTOC_VERSION.mVersion;
 			getLog().info("Protoc version: " + protocVersion);
 			
 			try {
-				File protocFile = Protoc.extractProtoc(protocVersion.replace(".", ""), includeStdTypes);
+				File protocFile = Protoc.extractProtoc(ProtocVersion.getVersion("-v"+protocVersion), includeStdTypes);
 				protocTemp = protocFile.getAbsolutePath();
 			}
 			catch (IOException e) {
