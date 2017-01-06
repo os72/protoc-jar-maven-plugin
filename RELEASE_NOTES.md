@@ -1,6 +1,9 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.1.0.3 (5-Jan-2017)
+* Fix to actually map 3.0.0 to 3.1.0, minor internal changes
+
 #### 3.1.0.2 (24-Nov-2016)
 * Support binary artifact download - for protoc binary, protoc plugins (issue #27)
 * Make "protocVersion" optional, default to latest (currently 3.1.0) (issue #22)
