@@ -1,6 +1,9 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.1.0.4 (15-Jan-2017)
+* Make binary artifacts executable, copy to executable temp file (issue #32)
+
 #### 3.1.0.3 (5-Jan-2017)
 * Fix to actually map 3.0.0 to 3.1.0, minor internal changes
 
