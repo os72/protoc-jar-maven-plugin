@@ -19,6 +19,8 @@
 package com.github.os72.protocjar.maven;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -487,14 +489,36 @@ public class ProtocJarMojo extends AbstractMojo
 			String[] as = artifactSpec.split(":");
 			Artifact artifact = artifactFactory.createDependencyArtifact(as[0], as[1], VersionRange.createFromVersionSpec(as[2]), "exe", platform, Artifact.SCOPE_RUNTIME);
 			artifactResolver.resolve(artifact, remoteRepositories, localRepository);
-			return artifact.getFile();
+			
+			File tempFile = File.createTempFile(as[1], ".exe");
+			copyFile(artifact.getFile(), tempFile);
+			tempFile.setExecutable(true);
+			tempFile.deleteOnExit();
+			return tempFile;
 		}
 		catch (Exception e) {
 			throw new MojoExecutionException("Error resolving artifact: " + artifactSpec, e);
 		}
 	}
 
-	class FileFilter implements IOFileFilter
+	static File copyFile(File srcFile, File destFile) throws IOException {		
+		FileInputStream is = null;
+		FileOutputStream os = null;
+		try {
+			is = new FileInputStream(srcFile);
+			os = new FileOutputStream(destFile);
+			int read = 0;
+			byte[] buf = new byte[4096];
+			while ((read = is.read(buf)) > 0) os.write(buf, 0, read);		
+		}
+		finally {
+			if (is != null) is.close();
+			if (os != null) os.close();
+		}
+		return destFile;
+	}
+
+	static class FileFilter implements IOFileFilter
 	{
 		String extension;
 
