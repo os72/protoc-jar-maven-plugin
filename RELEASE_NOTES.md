@@ -1,6 +1,9 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.1.0.5 (17-Jan-2017)
+* Fix PlatformDetector NPE on Linux
+
 #### 3.1.0.4 (15-Jan-2017)
 * Make binary artifacts executable, copy to executable temp file (issue #32)
 
