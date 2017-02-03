@@ -299,6 +299,24 @@ public class ProtocJarMojo extends AbstractMojo
 
 	private void performProtoCompilation() throws MojoExecutionException {
 		String protocTemp = null;
+
+		if (protocCommand != null) {
+			Runtime runtime = Runtime.getRuntime();
+			int exitCode;
+
+			try {
+				Process process = runtime.exec(protocCommand + " --version");
+
+				exitCode = process.waitFor();
+			} catch (Exception e) {
+				exitCode = -1;
+			}
+
+			if (exitCode != 0) {
+				protocCommand = null;
+			}
+		}
+
 		if ((protocCommand == null && protocArtifact == null) || includeStdTypes) {
 			if (protocVersion == null || protocVersion.length() < 1) protocVersion = ProtocVersion.PROTOC_VERSION.mVersion;
 			getLog().info("Protoc version: " + protocVersion);
