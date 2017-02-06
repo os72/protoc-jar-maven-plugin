@@ -18,16 +18,9 @@
  */
 package com.github.os72.protocjar.maven;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
-
+import com.github.os72.protocjar.PlatformDetector;
+import com.github.os72.protocjar.Protoc;
+import com.github.os72.protocjar.ProtocVersion;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -42,9 +35,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.github.os72.protocjar.PlatformDetector;
-import com.github.os72.protocjar.Protoc;
-import com.github.os72.protocjar.ProtocVersion;
+import java.io.*;
+import java.util.*;
 
 /**
  * Compiles .proto files using protoc-jar embedded protoc compiler. Also supports pre-installed protoc binary, and downloading binaries (protoc and protoc plugins) from maven repo
@@ -303,16 +295,28 @@ public class ProtocJarMojo extends AbstractMojo
 		if (protocCommand != null) {
 			Runtime runtime = Runtime.getRuntime();
 			int exitCode;
+			boolean checkVersion = true;
 
 			try {
 				Process process = runtime.exec(protocCommand + " --version");
-
 				exitCode = process.waitFor();
+
+				if (protocVersion != null) {
+					checkVersion = false;
+
+					BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+					String line = null;
+					while ((line = stdInput.readLine()) != null) {
+						if (line.equals("libprotoc " + protocVersion)) {
+							checkVersion = true;
+						}
+					}
+				}
 			} catch (Exception e) {
 				exitCode = -1;
 			}
 
-			if (exitCode != 0) {
+			if ((exitCode != 0) || !checkVersion) {
 				protocCommand = null;
 			}
 		}
