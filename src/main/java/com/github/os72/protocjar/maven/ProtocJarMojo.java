@@ -299,14 +299,12 @@ public class ProtocJarMojo extends AbstractMojo
 
 	private void performProtoCompilation() throws MojoExecutionException {
 		if (protocCommand != null) {
-			int exitCode;
 			try {
-				exitCode = Protoc.runProtoc(protocCommand, new String[]{"--version"});
+				Protoc.runProtoc(protocCommand, new String[]{"--version"});
 			}
 			catch (Exception e) {
-				exitCode = -1;
+				protocCommand = null;
 			}
-			if (exitCode != 0) protocCommand = null;
 		}
 		
 		String protocTemp = null;
