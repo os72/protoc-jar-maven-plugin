@@ -2,13 +2,13 @@ protoc-jar-maven-plugin
 =======================
 
 Protocol Buffers protobuf maven plugin - performs protobuf code generation using `protoc-jar` multi-platform executable protoc JAR.
-Available on Maven Central: http://central.maven.org/maven2/com/github/os72/protoc-jar-maven-plugin/3.1.0.5/
+Available on Maven Central: http://central.maven.org/maven2/com/github/os72/protoc-jar-maven-plugin/3.2.0/
 
-[![Maven Central](https://img.shields.io/badge/maven%20central-3.1.0.5-brightgreen.svg)](http://search.maven.org/#artifactdetails|com.github.os72|protoc-jar-maven-plugin|3.1.0.5|)
+[![Maven Central](https://img.shields.io/badge/maven%20central-3.2.0-brightgreen.svg)](http://search.maven.org/#artifactdetails|com.github.os72|protoc-jar-maven-plugin|3.2.0|)
 
 Simple maven plugin to compile .proto files using `protoc-jar` embedded protoc compiler, providing some portability across the major platforms (Linux, Mac/OSX, and Windows). At build time the plugin detects the platform and executes the corresponding protoc binary.
 
-Supports protoc versions 2.4.1, 2.5.0, 2.6.1, 3.1.0. Also supports pre-installed protoc binary, and downloading binaries (protoc and protoc plugins) from maven repo
+Supports protoc versions 2.4.1, 2.5.0, 2.6.1, 3.2.0. Also supports pre-installed protoc binary, and downloading binaries (protoc and protoc plugins) from maven repo
 
 See also
 * https://github.com/os72/protoc-jar
@@ -26,7 +26,7 @@ Sample usage - compile in main cycle into `target/generated-sources`, add genera
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.1.0.5</version>
+	<version>3.2.0</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -43,7 +43,7 @@ Sample usage - compile in main cycle into `target/generated-sources`, add genera
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.1.0.5</version>
+	<version>3.2.0</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -51,7 +51,7 @@ Sample usage - compile in main cycle into `target/generated-sources`, add genera
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocVersion>3.1.0</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.1.0 -->
+				<protocVersion>3.2.0</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.2.0 -->
 				<includeStdTypes>true</includeStdTypes>
 				<includeDirectories>
 					<include>src/main/more_proto_imports</include>
@@ -70,7 +70,7 @@ Sample usage - download protoc and plugin binaries from maven repo, multiple out
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.1.0.5</version>
+	<version>3.2.0</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -78,7 +78,7 @@ Sample usage - download protoc and plugin binaries from maven repo, multiple out
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocArtifact>com.google.protobuf:protoc:3.1.0</protocArtifact>
+				<protocArtifact>com.google.protobuf:protoc:3.2.0</protocArtifact>
 				<inputDirectories>
 					<include>src/main/resources</include>
 				</inputDirectories>
@@ -102,7 +102,7 @@ Sample usage - compile in test cycle, multiple output targets, don't alter proje
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.1.0.5</version>
+	<version>3.2.0</version>
 	<executions>
 		<execution>
 			<phase>generate-test-sources</phase>
@@ -110,7 +110,7 @@ Sample usage - compile in test cycle, multiple output targets, don't alter proje
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.1.0 -->
+				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.2.0 -->
 				<inputDirectories>
 					<include>src/test/resources</include>
 				</inputDirectories>
@@ -137,7 +137,7 @@ Sample usage - generate java shaded for use with `protobuf-java-shaded-241`, don
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.1.0.5</version>
+	<version>3.2.0</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -145,7 +145,7 @@ Sample usage - generate java shaded for use with `protobuf-java-shaded-241`, don
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.1.0 -->
+				<protocVersion>2.4.1</protocVersion> <!-- 2.4.1, 2.5.0, 2.6.1, 3.2.0 -->
 				<type>java-shaded</type>
 				<addSources>none</addSources>
 				<outputDirectory>src/main/java</outputDirectory>
