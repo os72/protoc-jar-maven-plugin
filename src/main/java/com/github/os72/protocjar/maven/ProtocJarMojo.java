@@ -461,6 +461,9 @@ public class ProtocJarMojo extends AbstractMojo
 			File outFile = new File(outputDir, file.getName());
 			cmd.add("--descriptor_set_out=" + FilenameUtils.removeExtension(outFile.toString()) + ".desc");
 			cmd.add("--include_imports");
+			if ("include_source_info".equals(outputOptions)) {
+				cmd.add("--include_source_info");
+			}
 		}
 		else {
 			if (outputOptions != null) {
