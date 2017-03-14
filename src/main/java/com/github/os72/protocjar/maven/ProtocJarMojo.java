@@ -18,9 +18,16 @@
  */
 package com.github.os72.protocjar.maven;
 
-import com.github.os72.protocjar.PlatformDetector;
-import com.github.os72.protocjar.Protoc;
-import com.github.os72.protocjar.ProtocVersion;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -35,11 +42,9 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
+import com.github.os72.protocjar.PlatformDetector;
+import com.github.os72.protocjar.Protoc;
+import com.github.os72.protocjar.ProtocVersion;
 
 /**
  * Compiles .proto files using protoc-jar embedded protoc compiler. Also supports pre-installed protoc binary, and downloading binaries (protoc and protoc plugins) from maven repo
