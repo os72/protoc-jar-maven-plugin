@@ -18,9 +18,16 @@
  */
 package com.github.os72.protocjar.maven;
 
-import com.github.os72.protocjar.PlatformDetector;
-import com.github.os72.protocjar.Protoc;
-import com.github.os72.protocjar.ProtocVersion;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -35,15 +42,13 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
+import com.github.os72.protocjar.PlatformDetector;
+import com.github.os72.protocjar.Protoc;
+import com.github.os72.protocjar.ProtocVersion;
 
 /**
  * Compiles .proto files using protoc-jar embedded protoc compiler. Also supports pre-installed protoc binary, and downloading binaries (protoc and protoc plugins) from maven repo
- *
+ * 
  * @goal run
  * @phase generate-sources
  * @requiresDependencyResolution
@@ -54,7 +59,7 @@ public class ProtocJarMojo extends AbstractMojo
 
     /**
 	 * Specifies the protoc version (default: latest version).
-	 *
+	 * 
 	 * @parameter property="protocVersion"
 	 */
 	private String protocVersion;
@@ -62,21 +67,21 @@ public class ProtocJarMojo extends AbstractMojo
 	/**
 	 * Input directories that have *.proto files (or the configured extension).
 	 * If none specified then <b>src/main/protobuf</b> is used.
-	 *
+	 * 
 	 * @parameter property="inputDirectories"
 	 */
 	private File[] inputDirectories;
 
 	/**
 	 * This parameter lets you specify additional include paths to protoc.
-	 *
+	 * 
 	 * @parameter property="includeDirectories"
 	 */
 	private File[] includeDirectories;
 
 	/**
 	 * If "true", extract the included google.protobuf standard types and add them to protoc import path.
-	 *
+	 * 
 	 * @parameter property="includeStdTypes" default-value="false"
 	 */
 	private boolean includeStdTypes;
@@ -86,7 +91,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * Options: "java",  "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby", "js"
 	 * <p>
 	 * Ignored when {@code <outputTargets>} is given
-	 *
+	 * 
 	 * @parameter property="type" default-value="java"
 	 */
 	private String type;
@@ -96,7 +101,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * Options: "main", "test", "none" (default: "main")
 	 * <p>
 	 * Ignored when {@code <outputTargets>} is given
-	 *
+	 * 
 	 * @parameter property="addSources" default-value="main"
 	 */
 	private String addSources;
@@ -109,7 +114,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * important to preserve output folder contents
 	 * <p>
 	 * Ignored when {@code <outputTargets>} is given
-	 *
+	 * 
 	 * @parameter property="cleanOutputFolder" default-value="false"
 	 */
 	private boolean cleanOutputFolder;
@@ -140,7 +145,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * depending on the addSources parameter
 	 * <p>
 	 * Ignored when {@code <outputTargets>} is given
-	 *
+	 * 
 	 * @parameter property="outputDirectory"
 	 */
 	private File outputDirectory;
@@ -170,7 +175,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * This parameter lets you specify multiple protoc output targets.
 	 * OutputTarget parameters: "type", "addSources", "cleanOutputFolder", "outputDirectory", "outputDirectorySuffix", "outputOptions", "pluginPath", "pluginArtifact".
 	 * Type options: "java", "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby", "js"
-	 *
+	 * 
 	 * <pre>
 	 * {@code
 	 * <outputTargets>
@@ -199,21 +204,21 @@ public class ProtocJarMojo extends AbstractMojo
 	 * <outputTargets>
 	 * }
 	 * </pre>
-	 *
+	 * 
 	 * @parameter property="outputTargets"
 	 */
 	private OutputTarget[] outputTargets;
 
 	/**
 	 * Default extension for protobuf files
-	 *
+	 * 
 	 * @parameter property="extension" default-value=".proto"
 	 */
 	private String extension;
 
 	/**
 	 * This parameter allows to use a protoc binary instead of the protoc-jar bundle
-	 *
+	 * 
 	 * @parameter property="protocCommand"
 	 */
 	private String protocCommand;
@@ -228,22 +233,22 @@ public class ProtocJarMojo extends AbstractMojo
 
 	/**
 	 * The Maven project.
-	 *
+	 * 
 	 * @parameter property="project"
 	 * @readonly
 	 * @required
 	 */
 	private MavenProject project;
 
-	/**
-	 * @parameter default-value="${localRepository}"
+	/** 
+	 * @parameter default-value="${localRepository}" 
 	 * @readonly
 	 * @required
 	 */
 	private ArtifactRepository localRepository;
 
-	/**
-	 * @parameter default-value="${project.remoteArtifactRepositories}"
+	/** 
+	 * @parameter default-value="${project.remoteArtifactRepositories}" 
 	 * @readonly
 	 * @required
 	 */
@@ -261,7 +266,7 @@ public class ProtocJarMojo extends AbstractMojo
 			getLog().info("Skipping 'pom' packaged project");
 			return;
 		}
-
+		
 		if (outputTargets == null || outputTargets.length == 0) {
 			OutputTarget target = new OutputTarget();
 			target.type = type;
@@ -274,21 +279,21 @@ public class ProtocJarMojo extends AbstractMojo
 			target.outputOptions = outputOptions;
 			outputTargets = new OutputTarget[] {target};
 		}
-
+		
 		for (OutputTarget target : outputTargets) {
 			target.addSources = target.addSources.toLowerCase().trim();
 			if ("true".equals(target.addSources)) target.addSources = "main";
-
+			
 			if (target.outputDirectory == null) {
 				String subdir = "generated-" + ("test".equals(target.addSources) ? "test-" : "") + "sources";
 				target.outputDirectory = new File(project.getBuild().getDirectory() + File.separator + subdir + File.separator);
 			}
-
+			
 			if (target.outputDirectorySuffix != null) {
 				target.outputDirectory = new File(target.outputDirectory, target.outputDirectorySuffix);
 			}
 		}
-
+		
 		performProtoCompilation();
 	}
 
@@ -301,12 +306,12 @@ public class ProtocJarMojo extends AbstractMojo
 				protocCommand = null;
 			}
 		}
-
+		
 		String protocTemp = null;
 		if ((protocCommand == null && protocArtifact == null) || includeStdTypes) {
 			if (protocVersion == null || protocVersion.length() < 1) protocVersion = ProtocVersion.PROTOC_VERSION.mVersion;
 			getLog().info("Protoc version: " + protocVersion);
-
+			
 			try {
 				File protocFile = Protoc.extractProtoc(ProtocVersion.getVersion("-v"+protocVersion), includeStdTypes);
 				protocTemp = protocFile.getAbsolutePath();
@@ -314,22 +319,22 @@ public class ProtocJarMojo extends AbstractMojo
 			catch (IOException e) {
 				throw new MojoExecutionException("Error extracting protoc for version " + protocVersion, e);
 			}
-
+			
 			if (protocCommand == null && protocArtifact == null) protocCommand = protocTemp;
 		}
-
+		
 		if (protocCommand == null && protocArtifact != null) {
 			protocCommand = resolveArtifact(protocArtifact).getAbsolutePath();
 		}
 		getLog().info("Protoc command: " + protocCommand);
-
+		
 		if (inputDirectories == null || inputDirectories.length == 0) {
 			File inputDir = new File(project.getBasedir().getAbsolutePath() + DEFAULT_INPUT_DIR);
 			inputDirectories = new File[] { inputDir };
 		}
 		getLog().info("Input directories:");
 		for (File input : inputDirectories) getLog().info("    " + input);
-
+		
 		if (includeStdTypes) {
 			File stdTypeDir = new File(new File(protocTemp).getParentFile().getParentFile(), "include");
 			if (includeDirectories != null && includeDirectories.length > 0) {
@@ -342,12 +347,12 @@ public class ProtocJarMojo extends AbstractMojo
 				includeDirectories = new File[] { stdTypeDir };
 			}
 		}
-
+		
 		if (includeDirectories != null && includeDirectories.length > 0) {
 			getLog().info("Include directories:");
 			for (File include : includeDirectories) getLog().info("    " + include);
 		}
-
+		
 		getLog().info("Output targets:");
 		for (OutputTarget target : outputTargets) getLog().info("    " + target);
 		for (OutputTarget target : outputTargets) preprocessTarget(target);
@@ -358,13 +363,13 @@ public class ProtocJarMojo extends AbstractMojo
 		if (target.pluginArtifact != null && target.pluginArtifact.length() > 0) {
 			target.pluginPath = resolveArtifact(target.pluginArtifact).getAbsolutePath();
 		}
-
+		
 		File f = target.outputDirectory;
 		if (!f.exists()) {
 			getLog().info(f + " does not exist. Creating...");
 			f.mkdirs();
 		}
-
+		
 		if (target.cleanOutputFolder) {
 			try {
 				getLog().info("Cleaning " + f);
@@ -376,18 +381,18 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private void processTarget(OutputTarget target) throws MojoExecutionException {
+	private void processTarget(OutputTarget target) throws MojoExecutionException {		
 		boolean shaded = false;
 		String targetType = target.type;
 		if (targetType.equals("java-shaded") || targetType.equals("java_shaded")) {
 			targetType = "java";
 			shaded = true;
 		}
-
+		
 		FileFilter fileFilter = new FileFilter(extension);
 		for (File input : inputDirectories) {
 			if (input == null) continue;
-
+			
 			if (input.exists() && input.isDirectory()) {
 				Collection<File> protoFiles = FileUtils.listFiles(input, fileFilter, TrueFileFilter.INSTANCE);
 				for (File protoFile : protoFiles) {
@@ -404,7 +409,7 @@ public class ProtocJarMojo extends AbstractMojo
 				else getLog().warn(input + " does not exist");
 			}
 		}
-
+		
 		if (shaded) {
 			try {
 				getLog().info("    Shading (version " + protocVersion + "): " + target.outputDirectory);
@@ -414,10 +419,10 @@ public class ProtocJarMojo extends AbstractMojo
 				throw new MojoExecutionException("Error occurred during shading", e);
 			}
 		}
-
+		
 		boolean mainAddSources = "main".endsWith(target.addSources);
 		boolean testAddSources = "test".endsWith(target.addSources);
-
+		
 		if (mainAddSources) {
 			getLog().info("Adding generated classes to classpath");
 			project.addCompileSourceRoot(target.outputDirectory.getAbsolutePath());
@@ -456,10 +461,8 @@ public class ProtocJarMojo extends AbstractMojo
 			File outFile = new File(outputDir, file.getName());
 			cmd.add("--descriptor_set_out=" + FilenameUtils.removeExtension(outFile.toString()) + ".desc");
 			cmd.add("--include_imports");
-			if (outputOptions != null) {
-				for (String arg : outputOptions.split("\\s+")) {
-					cmd.add(arg);
-				}
+			if ("include_source_info".equals(outputOptions)) {
+				cmd.add("--include_source_info");
 			}
 		}
 		else {
@@ -493,12 +496,12 @@ public class ProtocJarMojo extends AbstractMojo
 			Properties detectorProps = new Properties();
 			new PlatformDetector().detect(detectorProps, null);
 			String platform = detectorProps.getProperty("os.detected.classifier");
-
+			
 			getLog().info("Resolving artifact: " + artifactSpec + ", platform: " + platform);
 			String[] as = artifactSpec.split(":");
 			Artifact artifact = artifactFactory.createDependencyArtifact(as[0], as[1], VersionRange.createFromVersionSpec(as[2]), "exe", platform, Artifact.SCOPE_RUNTIME);
 			artifactResolver.resolve(artifact, remoteRepositories, localRepository);
-
+			
 			File tempFile = File.createTempFile(as[1], ".exe");
 			copyFile(artifact.getFile(), tempFile);
 			tempFile.setExecutable(true);
@@ -510,7 +513,7 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	static File copyFile(File srcFile, File destFile) throws IOException {
+	static File copyFile(File srcFile, File destFile) throws IOException {		
 		FileInputStream is = null;
 		FileOutputStream os = null;
 		try {
@@ -518,7 +521,7 @@ public class ProtocJarMojo extends AbstractMojo
 			os = new FileOutputStream(destFile);
 			int read = 0;
 			byte[] buf = new byte[4096];
-			while ((read = is.read(buf)) > 0) os.write(buf, 0, read);
+			while ((read = is.read(buf)) > 0) os.write(buf, 0, read);		
 		}
 		finally {
 			if (is != null) is.close();
