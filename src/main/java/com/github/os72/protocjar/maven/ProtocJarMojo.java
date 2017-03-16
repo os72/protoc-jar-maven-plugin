@@ -462,9 +462,7 @@ public class ProtocJarMojo extends AbstractMojo
 			cmd.add("--descriptor_set_out=" + FilenameUtils.removeExtension(outFile.toString()) + ".desc");
 			cmd.add("--include_imports");
 			if (outputOptions != null) {
-				for (String arg : outputOptions.split("\\s+")) {
-					cmd.add(arg);
-				}
+				for (String arg : outputOptions.split("\\s+")) cmd.add(arg);
 			}
 		}
 		else {
