@@ -1,6 +1,11 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.2.0.1 (2-Apr-2017)
+* More flexibility for parameter "outputOptions" when generating descriptors (issue #36)
+* Separate proto3 and proto2 standard types (parameter "includeStdTypes")
+* Better error message for unsupported versions
+
 #### 3.2.0 (15-Feb-2017)
 * Upgrade to protoc 3.2.0
 * Map 3.0.0, 3.1.0 to 3.2.0 for backward compatibility
