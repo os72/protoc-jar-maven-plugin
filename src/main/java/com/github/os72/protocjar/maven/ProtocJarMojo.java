@@ -307,20 +307,28 @@ public class ProtocJarMojo extends AbstractMojo
 			}
 		}
 		
-		String protocTemp = null;
+		//String protocTemp = null;
+		File stdTypeDir = null;
 		if ((protocCommand == null && protocArtifact == null) || includeStdTypes) {
 			if (protocVersion == null || protocVersion.length() < 1) protocVersion = ProtocVersion.PROTOC_VERSION.mVersion;
 			getLog().info("Protoc version: " + protocVersion);
 			
 			try {
-				File protocFile = Protoc.extractProtoc(ProtocVersion.getVersion("-v"+protocVersion), includeStdTypes);
-				protocTemp = protocFile.getAbsolutePath();
+				if (protocCommand == null && protocArtifact == null) {
+					File protocFile = Protoc.extractProtoc(ProtocVersion.getVersion("-v"+protocVersion), includeStdTypes);
+					protocCommand = protocFile.getAbsolutePath();
+					stdTypeDir = new File(protocFile.getParentFile().getParentFile(), "include");
+				}
+				else if (includeStdTypes) {
+					File tmpDir = Protoc.extractStdTypes(ProtocVersion.getVersion("-v"+protocVersion), null);
+					stdTypeDir = new File(tmpDir, "include");
+				}
 			}
 			catch (IOException e) {
 				throw new MojoExecutionException("Error extracting protoc for version " + protocVersion, e);
 			}
 			
-			if (protocCommand == null && protocArtifact == null) protocCommand = protocTemp;
+			//if (protocCommand == null && protocArtifact == null) protocCommand = protocTemp;
 		}
 		
 		if (protocCommand == null && protocArtifact != null) {
@@ -336,7 +344,7 @@ public class ProtocJarMojo extends AbstractMojo
 		for (File input : inputDirectories) getLog().info("    " + input);
 		
 		if (includeStdTypes) {
-			File stdTypeDir = new File(new File(protocTemp).getParentFile().getParentFile(), "include");
+			//File stdTypeDir = new File(new File(protocTemp).getParentFile().getParentFile(), "include");
 			if (includeDirectories != null && includeDirectories.length > 0) {
 				List<File> includeDirList = new ArrayList<File>();
 				includeDirList.add(stdTypeDir);
