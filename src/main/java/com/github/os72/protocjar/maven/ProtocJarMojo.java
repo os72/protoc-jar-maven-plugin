@@ -317,6 +317,15 @@ public class ProtocJarMojo extends AbstractMojo
 				if (protocCommand == null && protocArtifact == null) {
 					File protocFile = Protoc.extractProtoc(ProtocVersion.getVersion("-v"+protocVersion), includeStdTypes);
 					protocCommand = protocFile.getAbsolutePath();
+					try {
+						// some linuxes don't allow exec in /tmp, try one dummy execution, switch to user home if it fails
+						Protoc.runProtoc(protocCommand, new String[]{"--version"});
+					}
+					catch (Exception e) {
+						String homeDir = System.getProperty("user.home");
+						protocFile = Protoc.extractProtoc(ProtocVersion.getVersion("-v"+protocVersion), includeStdTypes, new File(homeDir));
+						protocCommand = protocFile.getAbsolutePath();
+					}
 					stdTypeDir = new File(protocFile.getParentFile().getParentFile(), "include");
 				}
 				else if (includeStdTypes) {
