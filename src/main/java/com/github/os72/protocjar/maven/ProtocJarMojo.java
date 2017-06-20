@@ -261,6 +261,8 @@ public class ProtocJarMojo extends AbstractMojo
 	/** @component */
 	private ArtifactResolver artifactResolver;
 
+	private File tempRoot = null;
+
     public void execute() throws MojoExecutionException {
 		if (project.getPackaging() != null && "pom".equals(project.getPackaging().toLowerCase())) {
 			getLog().info("Skipping 'pom' packaged project");
@@ -307,13 +309,13 @@ public class ProtocJarMojo extends AbstractMojo
 			}
 		}
 		
-		//String protocTemp = null;
 		File stdTypeDir = null;
 		if ((protocCommand == null && protocArtifact == null) || includeStdTypes) {
 			if (protocVersion == null || protocVersion.length() < 1) protocVersion = ProtocVersion.PROTOC_VERSION.mVersion;
 			getLog().info("Protoc version: " + protocVersion);
 			
 			try {
+				// option (1) - extract embedded protoc
 				if (protocCommand == null && protocArtifact == null) {
 					File protocFile = Protoc.extractProtoc(ProtocVersion.getVersion("-v"+protocVersion), includeStdTypes);
 					protocCommand = protocFile.getAbsolutePath();
@@ -322,8 +324,8 @@ public class ProtocJarMojo extends AbstractMojo
 						Protoc.runProtoc(protocCommand, new String[]{"--version"});
 					}
 					catch (Exception e) {
-						String homeDir = System.getProperty("user.home");
-						protocFile = Protoc.extractProtoc(ProtocVersion.getVersion("-v"+protocVersion), includeStdTypes, new File(homeDir));
+						tempRoot = new File(System.getProperty("user.home"));
+						protocFile = Protoc.extractProtoc(ProtocVersion.getVersion("-v"+protocVersion), includeStdTypes, tempRoot);
 						protocCommand = protocFile.getAbsolutePath();
 					}
 					stdTypeDir = new File(protocFile.getParentFile().getParentFile(), "include");
@@ -336,12 +338,19 @@ public class ProtocJarMojo extends AbstractMojo
 			catch (IOException e) {
 				throw new MojoExecutionException("Error extracting protoc for version " + protocVersion, e);
 			}
-			
-			//if (protocCommand == null && protocArtifact == null) protocCommand = protocTemp;
 		}
 		
+		// option (2) - resolve protoc maven artifact (download)
 		if (protocCommand == null && protocArtifact != null) {
-			protocCommand = resolveArtifact(protocArtifact).getAbsolutePath();
+			protocCommand = resolveArtifact(protocArtifact, null).getAbsolutePath();
+			try {
+				// some linuxes don't allow exec in /tmp, try one dummy execution, switch to user home if it fails
+				Protoc.runProtoc(protocCommand, new String[]{"--version"});
+			}
+			catch (Exception e) {
+				tempRoot = new File(System.getProperty("user.home"));
+				protocCommand = resolveArtifact(protocArtifact, tempRoot).getAbsolutePath();
+			}
 		}
 		getLog().info("Protoc command: " + protocCommand);
 		
@@ -353,7 +362,6 @@ public class ProtocJarMojo extends AbstractMojo
 		for (File input : inputDirectories) getLog().info("    " + input);
 		
 		if (includeStdTypes) {
-			//File stdTypeDir = new File(new File(protocTemp).getParentFile().getParentFile(), "include");
 			if (includeDirectories != null && includeDirectories.length > 0) {
 				List<File> includeDirList = new ArrayList<File>();
 				includeDirList.add(stdTypeDir);
@@ -378,7 +386,7 @@ public class ProtocJarMojo extends AbstractMojo
 
 	private void preprocessTarget(OutputTarget target) throws MojoExecutionException {
 		if (target.pluginArtifact != null && target.pluginArtifact.length() > 0) {
-			target.pluginPath = resolveArtifact(target.pluginArtifact).getAbsolutePath();
+			target.pluginPath = resolveArtifact(target.pluginArtifact, tempRoot).getAbsolutePath();
 		}
 		
 		File f = target.outputDirectory;
@@ -508,7 +516,7 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private File resolveArtifact(String artifactSpec) throws MojoExecutionException {
+	private File resolveArtifact(String artifactSpec, File dir) throws MojoExecutionException {
 		try {
 			Properties detectorProps = new Properties();
 			new PlatformDetector().detect(detectorProps, null);
@@ -519,7 +527,7 @@ public class ProtocJarMojo extends AbstractMojo
 			Artifact artifact = artifactFactory.createDependencyArtifact(as[0], as[1], VersionRange.createFromVersionSpec(as[2]), "exe", platform, Artifact.SCOPE_RUNTIME);
 			artifactResolver.resolve(artifact, remoteRepositories, localRepository);
 			
-			File tempFile = File.createTempFile(as[1], ".exe");
+			File tempFile = File.createTempFile(as[1], ".exe", dir);
 			copyFile(artifact.getFile(), tempFile);
 			tempFile.setExecutable(true);
 			tempFile.deleteOnExit();
