@@ -1,6 +1,10 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.3.0.1 (22-Jun-2017)
+* Use alternative dir (user.home) if execution in temp dir fails (issue #39)
+* Fix "includeStdTypes" logic that could break "protocCommand" (issue #40)
+
 #### 3.3.0 (28-May-2017)
 * Upgrade to protoc 3.3.0
 * Map 3.0.0, 3.1.0, 3.2.0 to 3.3.0 for backward compatibility
