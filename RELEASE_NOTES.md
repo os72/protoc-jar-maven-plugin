@@ -1,6 +1,11 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.4.0 (29-Aug-2017)
+* Upgrade to protoc 3.4.0
+* Map previous 3.x versions to 3.4.0 for backward compatibility
+* Support POWER8 (ppc64le) platform (protoc 3.4.0 only)
+
 #### 3.3.0.1 (22-Jun-2017)
 * Use alternative dir (user.home) if execution in temp dir fails (issue #39)
 * Fix "includeStdTypes" logic that could break "protocCommand" (issue #40)
