@@ -20,6 +20,11 @@ See also
 * https://github.com/os72/protobuf-java-shaded-261
 * https://github.com/google/protobuf
 
+Binaries
+* http://central.maven.org/maven2/com/google/protobuf/protoc/
+* http://central.maven.org/maven2/com/github/os72/protoc/
+* https://oss.sonatype.org/content/repositories/snapshots/com/github/os72/protoc/
+
 #### Usage
 
 Documentation: see http://os72.github.io/protoc-jar-maven-plugin/, in particular [run-mojo](http://os72.github.io/protoc-jar-maven-plugin/run-mojo.html)
