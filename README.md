@@ -2,9 +2,9 @@ protoc-jar-maven-plugin
 =======================
 
 Protocol Buffers protobuf maven plugin - performs protobuf code generation using [protoc-jar](https://github.com/os72/protoc-jar) multi-platform executable protoc JAR.
-Available on Maven Central: http://central.maven.org/maven2/com/github/os72/protoc-jar-maven-plugin/3.4.0.1/
+Available on Maven Central: http://central.maven.org/maven2/com/github/os72/protoc-jar-maven-plugin/3.4.0.2/
 
-[![Maven Central](https://img.shields.io/badge/maven%20central-3.4.0.1-brightgreen.svg)](http://search.maven.org/#artifactdetails|com.github.os72|protoc-jar-maven-plugin|3.4.0.1|)
+[![Maven Central](https://img.shields.io/badge/maven%20central-3.4.0.2-brightgreen.svg)](http://search.maven.org/#artifactdetails|com.github.os72|protoc-jar-maven-plugin|3.4.0.2|)
 
 Simple maven plugin to compile .proto files using [protoc-jar](https://github.com/os72/protoc-jar) embedded protoc compiler, providing some portability across the major platforms (Linux, Mac/OSX, and Windows). At build time the plugin detects the platform and executes the corresponding protoc binary.
 
@@ -12,6 +12,7 @@ Supports protoc versions 2.4.1, 2.5.0, 2.6.1, 3.4.0. Also supports pre-installed
 
 * New: Support for Linux on POWER8 platform (linux-ppcle_64), thanks to [Apache SystemML](https://github.com/apache/systemml) folks ([nakul02](https://github.com/nakul02))
 * New: Support for FreeBSD on x86 platform (freebsd-x86_64), thanks [kjopek](https://github.com/kjopek)
+* New: Support for Linux on ARM platform (linux-aarch_64), thanks [garciagorka](https://github.com/garciagorka)
 
 See also
 * https://github.com/os72/protoc-jar
@@ -34,7 +35,7 @@ Sample usage - compile in main cycle into `target/generated-sources`, add genera
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.4.0.1</version>
+	<version>3.4.0.2</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -51,7 +52,7 @@ Sample usage - compile in main cycle into `target/generated-sources`, add genera
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.4.0.1</version>
+	<version>3.4.0.2</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -78,7 +79,7 @@ Sample usage - download protoc and plugin binaries from maven repo, multiple out
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.4.0.1</version>
+	<version>3.4.0.2</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -110,7 +111,7 @@ Sample usage - compile in test cycle, multiple output targets, don't alter proje
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.4.0.1</version>
+	<version>3.4.0.2</version>
 	<executions>
 		<execution>
 			<phase>generate-test-sources</phase>
@@ -145,7 +146,7 @@ Sample usage - generate java shaded for use with `protobuf-java-shaded-241`, don
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.4.0.1</version>
+	<version>3.4.0.2</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
