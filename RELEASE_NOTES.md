@@ -1,6 +1,11 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.5.0 (28-Nov-2017)
+* Upgrade to protoc 3.5.0
+* Supports FreeBSD/x86, Linux/POWER8 (freebsd-x86_64, linux-ppcle_64)
+* Supports Linux/ARM, provided by Google now (linux-aarch_64)
+
 #### 3.4.0.2 (12-Nov-2017)
 * Support for Linux on ARM platform (linux-aarch_64; 2.4.1, 2.6.1, 3.4.0)
 * Fix: download would not replace existing file (eg, maven-metadata.xml)
