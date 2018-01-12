@@ -40,6 +40,7 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.github.os72.protocjar.PlatformDetector;
@@ -85,6 +86,14 @@ public class ProtocJarMojo extends AbstractMojo
 	 * @parameter property="includeStdTypes" default-value="false"
 	 */
 	private boolean includeStdTypes;
+
+	/**
+	 * Specifies whether to add the source .proto files found in inputDirectories/includeDirectories to the generated jar file.
+	 * Options: "all" (add all), "inputs" (add only from inputDirectories), "none" (default: "none")
+	 * 
+	 * @parameter property="addProtoSources" default-value="none"
+	 */
+	private String addProtoSources;
 
 	/**
 	 * Specifies output type.
@@ -260,6 +269,8 @@ public class ProtocJarMojo extends AbstractMojo
 	private ArtifactFactory artifactFactory;
 	/** @component */
 	private ArtifactResolver artifactResolver;
+	/** @component */
+    protected MavenProjectHelper projectHelper;
 
 	private File tempRoot = null;
 
@@ -359,7 +370,14 @@ public class ProtocJarMojo extends AbstractMojo
 			inputDirectories = new File[] { inputDir };
 		}
 		getLog().info("Input directories:");
-		for (File input : inputDirectories) getLog().info("    " + input);
+		for (File input : inputDirectories) {
+			getLog().info("    " + input);
+			if ("all".equalsIgnoreCase(addProtoSources) || "inputs".equalsIgnoreCase(addProtoSources)) {
+				List<String> incs = Arrays.asList("**/*" + extension);
+				List<String> excs = new ArrayList<String>();
+				projectHelper.addResource(project, input.getAbsolutePath(), incs, excs);			
+			}
+		}
 		
 		if (includeStdTypes) {
 			if (includeDirectories != null && includeDirectories.length > 0) {
@@ -375,7 +393,14 @@ public class ProtocJarMojo extends AbstractMojo
 		
 		if (includeDirectories != null && includeDirectories.length > 0) {
 			getLog().info("Include directories:");
-			for (File include : includeDirectories) getLog().info("    " + include);
+			for (File include : includeDirectories) {
+				getLog().info("    " + include);
+				if ("all".equalsIgnoreCase(addProtoSources)) {
+					List<String> incs = Arrays.asList("**/*" + extension);
+					List<String> excs = new ArrayList<String>();
+					projectHelper.addResource(project, include.getAbsolutePath(), incs, excs);
+				}
+			}
 		}
 		
 		getLog().info("Output targets:");
