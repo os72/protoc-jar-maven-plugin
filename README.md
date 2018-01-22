@@ -2,13 +2,13 @@ protoc-jar-maven-plugin
 =======================
 
 Protocol Buffers protobuf maven plugin - performs protobuf code generation using [protoc-jar](https://github.com/os72/protoc-jar) multi-platform executable protoc JAR.
-Available on Maven Central: http://central.maven.org/maven2/com/github/os72/protoc-jar-maven-plugin/3.5.0/
+Available on Maven Central: http://central.maven.org/maven2/com/github/os72/protoc-jar-maven-plugin/3.5.1/
 
-[![Maven Central](https://img.shields.io/badge/maven%20central-3.5.0-brightgreen.svg)](http://search.maven.org/#artifactdetails|com.github.os72|protoc-jar-maven-plugin|3.5.0|)
+[![Maven Central](https://img.shields.io/badge/maven%20central-3.5.1-brightgreen.svg)](http://search.maven.org/#artifactdetails|com.github.os72|protoc-jar-maven-plugin|3.5.1|)
 
 Simple maven plugin to compile .proto files using [protoc-jar](https://github.com/os72/protoc-jar) embedded protoc compiler, providing some portability across the major platforms (Linux, Mac/OSX, and Windows). At build time the plugin detects the platform and executes the corresponding protoc binary.
 
-Supports protoc versions 2.4.1, 2.5.0, 2.6.1, 3.5.0. Also supports pre-installed protoc binary, and downloading binaries (protoc and protoc plugins) from maven repo
+Supports protoc versions 2.4.1, 2.5.0, 2.6.1, 3.5.1. Also supports pre-installed protoc binary, and downloading binaries (protoc and protoc plugins) from maven repo
 
 * New: Support for Linux on POWER8 platform (linux-ppcle_64), thanks to [Apache SystemML](https://github.com/apache/systemml) folks ([nakul02](https://github.com/nakul02))
 * New: Support for FreeBSD on x86 platform (freebsd-x86_64), thanks [kjopek](https://github.com/kjopek)
@@ -35,7 +35,7 @@ Sample usage - compile in main cycle into `target/generated-sources`, add genera
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.5.0</version>
+	<version>3.5.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -47,12 +47,12 @@ Sample usage - compile in main cycle into `target/generated-sources`, add genera
 </plugin>
 ```
 
-Sample usage - compile in main cycle into `target/generated-sources`, add generated sources to project, include `google.protobuf` standard types, include additional imports:
+Sample usage - compile in main cycle into `target/generated-sources`, add generated sources to project, add all .proto sources to generated jar, include `google.protobuf` standard types, include additional imports:
 ```xml
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.5.0</version>
+	<version>3.5.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -60,7 +60,7 @@ Sample usage - compile in main cycle into `target/generated-sources`, add genera
 				<goal>run</goal>
 			</goals>
 			<configuration>
-				<protocVersion>3.5.0</protocVersion>
+				<addProtoSources>all</addProtoSources>
 				<includeStdTypes>true</includeStdTypes>
 				<includeDirectories>
 					<include>src/main/more_proto_imports</include>
@@ -79,7 +79,7 @@ Sample usage - download protoc and plugin binaries from maven repo, multiple out
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.5.0</version>
+	<version>3.5.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -111,7 +111,7 @@ Sample usage - compile in test cycle, multiple output targets, don't alter proje
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.5.0</version>
+	<version>3.5.1</version>
 	<executions>
 		<execution>
 			<phase>generate-test-sources</phase>
@@ -146,7 +146,7 @@ Sample usage - generate java shaded for use with `protobuf-java-shaded-241`, don
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.5.0</version>
+	<version>3.5.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>

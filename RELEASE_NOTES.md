@@ -1,6 +1,12 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.5.1 (21-Jan-2018)
+* Upgrade to protoc 3.5.1
+* New option "addProtoSources" to add source .proto files to the generated jar file (issue #44)
+* Supports FreeBSD/x86, Linux/POWER8 (freebsd-x86_64, linux-ppcle_64)
+* Supports Linux/ARM, provided by Google (linux-aarch_64)
+
 #### 3.5.0 (28-Nov-2017)
 * Upgrade to protoc 3.5.0
 * Supports FreeBSD/x86, Linux/POWER8 (freebsd-x86_64, linux-ppcle_64)
