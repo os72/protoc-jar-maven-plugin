@@ -27,7 +27,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.5.1</version>
+	<version>3.5.1.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -46,7 +46,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.5.1</version>
+	<version>3.5.1.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -75,7 +75,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.5.1</version>
+	<version>3.5.1.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -109,7 +109,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.5.1</version>
+	<version>3.5.1.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -136,7 +136,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.5.1</version>
+	<version>3.5.1.1</version>
 	<executions>
 		<execution>
 			<phase>generate-test-sources</phase>
@@ -163,7 +163,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.5.1</version>
+	<version>3.5.1.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -191,7 +191,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.5.1</version>
+	<version>3.5.1.1</version>
 	<executions>
 		<execution>
 			<phase>generate-test-sources</phase>
@@ -228,7 +228,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.5.1</version>
+	<version>3.5.1.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>

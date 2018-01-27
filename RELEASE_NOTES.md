@@ -1,6 +1,9 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.5.1.1 (27-Jan-2018)
+* Fix regression in shading (due to incorrect version formatting)
+
 #### 3.5.1 (21-Jan-2018)
 * Upgrade to protoc 3.5.1
 * New option "addProtoSources" to add source .proto files to the generated jar file (issue #44)
