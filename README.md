@@ -19,6 +19,7 @@ See also
 * https://github.com/os72/protobuf-java-shaded-241
 * https://github.com/os72/protobuf-java-shaded-250
 * https://github.com/os72/protobuf-java-shaded-261
+* https://github.com/os72/protobuf-java-shaded-351
 * https://github.com/google/protobuf
 
 Binaries
