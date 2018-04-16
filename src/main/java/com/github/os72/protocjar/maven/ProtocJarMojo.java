@@ -446,7 +446,6 @@ public class ProtocJarMojo extends AbstractMojo
 				getLog().error("Unexpected error", e);
 			}finally{
 				close(zis);
-				close(zis);
 			}
 		}
 	}
