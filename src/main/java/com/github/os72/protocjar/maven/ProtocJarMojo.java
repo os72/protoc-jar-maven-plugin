@@ -451,6 +451,7 @@ public class ProtocJarMojo extends AbstractMojo
 		for (Artifact artifact : getArtifactsForProtoExtraction()) {
 			ZipInputStream zis = null;
 			try {
+				if(artifact.getFile()==null)continue;
 				zis = new ZipInputStream(new FileInputStream(artifact.getFile()));
 				ZipEntry ze;
 				while ((ze = zis.getNextEntry()) != null) {
