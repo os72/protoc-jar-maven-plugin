@@ -18,8 +18,19 @@
  */
 package com.github.os72.protocjar.maven;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -84,8 +95,8 @@ public class ProtocJarMojo extends AbstractMojo
 
 	/**
 	 * Specifies whether to extract .proto files from Maven dependencies and add them to the protoc import path.
-	 * Options: "none" (do not extract and proto files), "referenced" (extracts proto files only from directly referenced dependencies),
-	 * "transitive" (extracts proto files from all referenced and transitive dependencies)
+	 * Options: "none" (do not extract any proto files), "direct" (extract only from direct dependencies),
+	 * "transitive" (extract from direct and transitive dependencies)
 	 *
 	 * @parameter property="includeMavenTypes" default-value="none"
 	 */
@@ -324,16 +335,14 @@ public class ProtocJarMojo extends AbstractMojo
 			}
 		}
 		
-		File stdTypeDir = null;
-		File mavenTypeDir = null;
-		if ((protocCommand == null && protocArtifact == null) || includeStdTypes || includeMavenTypes()) {
+		if (protocCommand == null && protocArtifact == null) {
 			if (protocVersion == null || protocVersion.length() < 1) protocVersion = ProtocVersion.PROTOC_VERSION.mVersion;
 			getLog().info("Protoc version: " + protocVersion);
 			
 			try {
 				// option (1) - extract embedded protoc
 				if (protocCommand == null && protocArtifact == null) {
-					File protocFile = Protoc.extractProtoc(ProtocVersion.getVersion("-v"+protocVersion), includeStdTypes);
+					File protocFile = Protoc.extractProtoc(ProtocVersion.getVersion("-v"+protocVersion), false);
 					protocCommand = protocFile.getAbsolutePath();
 					try {
 						// some linuxes don't allow exec in /tmp, try one dummy execution, switch to user home if it fails
@@ -341,18 +350,9 @@ public class ProtocJarMojo extends AbstractMojo
 					}
 					catch (Exception e) {
 						tempRoot = new File(System.getProperty("user.home"));
-						protocFile = Protoc.extractProtoc(ProtocVersion.getVersion("-v"+protocVersion), includeStdTypes, tempRoot);
+						protocFile = Protoc.extractProtoc(ProtocVersion.getVersion("-v"+protocVersion), false, tempRoot);
 						protocCommand = protocFile.getAbsolutePath();
 					}
-					stdTypeDir = new File(protocFile.getParentFile().getParentFile(), "include");
-					mavenTypeDir = new File(protocFile.getParentFile().getParentFile(), "maven-include");
-				}
-				else if (includeStdTypes || includeMavenTypes()) {
-					File tmpDir = Protoc.extractStdTypes(ProtocVersion.getVersion("-v"+protocVersion), null);
-					if(includeStdTypes)
-						stdTypeDir = new File(tmpDir, "include");
-					if (includeMavenTypes())
-						mavenTypeDir = new File(tmpDir, "maven-include");
 				}
 			}
 			catch (IOException e) {
@@ -374,6 +374,24 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 		getLog().info("Protoc command: " + protocCommand);
 		
+		// extract additional include types
+		if (includeStdTypes || hasIncludeMavenTypes()) {
+			try {
+				File tmpDir = File.createTempFile("protocjar", "");
+				tmpDir.delete(); tmpDir.mkdirs();
+				tmpDir.deleteOnExit();
+				File extraTypeDir = new File(tmpDir, "include");
+				getLog().info("Additional include types: " + extraTypeDir);
+				updateIncludeDirectories(extraTypeDir);
+				if (includeStdTypes) Protoc.extractStdTypes(ProtocVersion.getVersion("-v"+protocVersion), tmpDir); // yes, tmpDir
+				if (hasIncludeMavenTypes()) extractProtosFromDependencies(extraTypeDir);
+				deleteOnExitRecursive(extraTypeDir);
+			}
+			catch (IOException e) {
+				throw new MojoExecutionException("Error extracting additional include types", e);
+			}
+		}
+		
 		if (inputDirectories == null || inputDirectories.length == 0) {
 			File inputDir = new File(project.getBasedir().getAbsolutePath() + DEFAULT_INPUT_DIR);
 			inputDirectories = new File[] { inputDir };
@@ -386,15 +404,6 @@ public class ProtocJarMojo extends AbstractMojo
 				List<String> excs = new ArrayList<String>();
 				projectHelper.addResource(project, input.getAbsolutePath(), incs, excs);			
 			}
-		}
-
-		if (includeStdTypes) {
-			updateIncludeDirectories(stdTypeDir);
-		}
-
-		if (includeMavenTypes()) {
-			extractProtoFromDependencies(mavenTypeDir);
-			updateIncludeDirectories(mavenTypeDir);
 		}
 		
 		if (includeDirectories != null && includeDirectories.length > 0) {
@@ -415,73 +424,7 @@ public class ProtocJarMojo extends AbstractMojo
 		for (OutputTarget target : outputTargets) processTarget(target);
 	}
 
-	private boolean includeMavenTypes(){
-		return includeMavenTypes.equalsIgnoreCase("dependency") || includeMavenTypes.equalsIgnoreCase("transitive");
-	}
-
-	@SuppressWarnings("unchecked")
-	private Set<Artifact> getArtifactsForProtoExtraction(){
-		if(includeMavenTypes.equalsIgnoreCase("dependency"))
-			return project.getDependencyArtifacts();
-		else if(includeMavenTypes.equalsIgnoreCase("transitive"))
-			return project.getArtifacts();
-		return new HashSet<Artifact>();
-	}
-
-	private void extractProtoFromDependencies(File mavenTypeDir){
-		for (Artifact artifact : getArtifactsForProtoExtraction()) {
-			ZipInputStream zis = null;
-			try {
-				zis = new ZipInputStream(new FileInputStream(artifact.getFile()));
-				ZipEntry ze;
-				while ((ze = zis.getNextEntry()) != null) {
-					if (ze.isDirectory() || !ze.getName().toLowerCase().contains(extension))
-						continue;
-					writeProtoFile(mavenTypeDir, zis, ze);
-					zis.closeEntry();
-				}
-			} catch (IOException e) {
-				getLog().error("Error extrating proto files from artifact: " + artifact.getArtifactId(), e);
-			} catch (Throwable e) {
-				getLog().error("Unexpected error", e);
-			}finally{
-				close(zis);
-			}
-		}
-	}
-
-	private void writeProtoFile(File mavenTypeDir, ZipInputStream zis, ZipEntry proto){
-		getLog().info("Including proto file " + proto.getName());
-		File protoOut = new File(mavenTypeDir + File.separator + proto.getName());
-		new File(protoOut.getParent()).mkdirs();
-
-		byte[] buffer = new byte[1024];
-		FileOutputStream fos = null;
-		try{
-			fos = new FileOutputStream(protoOut);
-			int length;
-			while ((length = zis.read(buffer)) > 0) {
-				fos.write(buffer, 0, length);
-			}
-			protoOut.deleteOnExit();
-		}catch(IOException e){
-			getLog().error("Error writing proto file " + proto.getName());
-		}finally{
-			close(fos);
-		}
-	}
-
-	private void close(Closeable c){
-		if (c == null)
-			return;
-		try{
-			c.close();
-		}catch (IOException e){
-			getLog().warn("Error closing input or output stream", e);
-		}
-	}
-
-	private void updateIncludeDirectories(File additionalIncludes){
+	private void updateIncludeDirectories(File additionalIncludes) {
 		if (includeDirectories != null && includeDirectories.length > 0) {
 			List<File> includeDirList = new ArrayList<File>();
 			includeDirList.add(additionalIncludes);
@@ -490,6 +433,49 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 		else {
 			includeDirectories = new File[] { additionalIncludes };
+		}
+	}
+
+	private boolean hasIncludeMavenTypes() {
+		return includeMavenTypes.equalsIgnoreCase("direct") || includeMavenTypes.equalsIgnoreCase("transitive");
+	}
+
+	@SuppressWarnings("unchecked")
+	private Set<Artifact> getArtifactsForProtoExtraction() {
+		if (includeMavenTypes.equalsIgnoreCase("direct")) return project.getDependencyArtifacts();
+		else if (includeMavenTypes.equalsIgnoreCase("transitive")) return project.getArtifacts();
+		return new HashSet<Artifact>();
+	}
+
+	private void extractProtosFromDependencies(File dir) throws IOException {
+		for (Artifact artifact : getArtifactsForProtoExtraction()) {
+			ZipInputStream zis = null;
+			try {
+				zis = new ZipInputStream(new FileInputStream(artifact.getFile()));
+				ZipEntry ze;
+				while ((ze = zis.getNextEntry()) != null) {
+					if (ze.isDirectory() || !ze.getName().toLowerCase().endsWith(extension)) continue;
+					writeProtoFile(dir, zis, ze);
+					zis.closeEntry();
+				}
+			}
+			finally {
+				if (zis != null) zis.close();
+			}
+		}
+	}
+
+	private void writeProtoFile(File dir, ZipInputStream zis, ZipEntry protoEntry) throws IOException {
+		getLog().info("    " + protoEntry.getName());
+		File protoOut = new File(dir, protoEntry.getName());
+		protoOut.getParentFile().mkdirs();
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(protoOut);
+			streamCopy(zis, fos);
+		}
+		finally {
+			if (fos != null) fos.close();
 		}
 	}
 
@@ -647,21 +633,33 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
+	static void deleteOnExitRecursive(File dir) {
+		dir.deleteOnExit();
+		for (File f : dir.listFiles()) {
+			f.deleteOnExit();
+			if (f.isDirectory()) deleteOnExitRecursive(f);
+		}
+	}
+
 	static File copyFile(File srcFile, File destFile) throws IOException {		
 		FileInputStream is = null;
 		FileOutputStream os = null;
 		try {
 			is = new FileInputStream(srcFile);
 			os = new FileOutputStream(destFile);
-			int read = 0;
-			byte[] buf = new byte[4096];
-			while ((read = is.read(buf)) > 0) os.write(buf, 0, read);		
+			streamCopy(is, os);
 		}
 		finally {
 			if (is != null) is.close();
 			if (os != null) os.close();
 		}
 		return destFile;
+	}
+
+	static void streamCopy(InputStream in, OutputStream out) throws IOException {
+		int read = 0;
+		byte[] buf = new byte[4096];
+		while ((read = in.read(buf)) > 0) out.write(buf, 0, read);		
 	}
 
 	static class FileFilter implements IOFileFilter
