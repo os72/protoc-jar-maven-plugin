@@ -449,9 +449,9 @@ public class ProtocJarMojo extends AbstractMojo
 
 	private void extractProtosFromDependencies(File dir) throws IOException {
 		for (Artifact artifact : getArtifactsForProtoExtraction()) {
+			if (artifact.getFile() == null) continue;
 			ZipInputStream zis = null;
 			try {
-				if(artifact.getFile()==null)continue;
 				zis = new ZipInputStream(new FileInputStream(artifact.getFile()));
 				ZipEntry ze;
 				while ((ze = zis.getNextEntry()) != null) {
