@@ -491,6 +491,7 @@ public class ProtocJarMojo extends AbstractMojo
 	private void processFile(File file, String version, String type, String pluginPath, File outputDir, String outputOptions) throws MojoExecutionException {
 		getLog().info("    Processing ("+ type + "): " + file.getName());
 		Collection<String> cmd = buildCommand(file, version, type, pluginPath, outputDir, outputOptions);
+		buildContext.removeMessages(file);
 		try {
 			int ret = 0;
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
