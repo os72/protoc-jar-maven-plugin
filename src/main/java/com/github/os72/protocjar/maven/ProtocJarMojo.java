@@ -18,6 +18,7 @@
  */
 package com.github.os72.protocjar.maven;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -32,6 +33,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -491,8 +493,26 @@ public class ProtocJarMojo extends AbstractMojo
 		Collection<String> cmd = buildCommand(file, version, type, pluginPath, outputDir, outputOptions);
 		try {
 			int ret = 0;
-			if (protocCommand == null) ret = Protoc.runProtoc(cmd.toArray(new String[0]));
-			else ret = Protoc.runProtoc(protocCommand, cmd.toArray(new String[0]));
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			ByteArrayOutputStream err = new ByteArrayOutputStream();
+			TeeOutputStream outTee = new TeeOutputStream(System.out, out);
+			TeeOutputStream errTee = new TeeOutputStream(System.err, err);
+			if (protocCommand == null) ret = Protoc.runProtoc(cmd.toArray(new String[0]), outTee, errTee);
+			else ret = Protoc.runProtoc(protocCommand, Arrays.asList(cmd.toArray(new String[0])), outTee, errTee);
+			String outStr = out.toString();
+			String errStr = err.toString();
+			if (!errStr.isEmpty()) {
+				int severity = ret != 0 ? BuildContext.SEVERITY_ERROR : BuildContext.SEVERITY_WARNING;
+				String[] lines = errStr.split("\\n",-1);
+				for (String line : lines) {
+					if (line.contains(file.getName().toString())) {
+						String[] parts = line.split(":",4);
+						if (parts.length == 4) {
+							buildContext.addMessage(file, Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), parts[3], severity, null);
+						}
+					}
+				}
+			}
 			if (ret != 0) throw new MojoExecutionException("protoc-jar failed for " + file + ". Exit code " + ret);
 		}
 		catch (InterruptedException e) {
