@@ -510,7 +510,11 @@ public class ProtocJarMojo extends AbstractMojo
 						String[] parts = line.split(":",4);
 						if (parts.length == 4) {
 							buildContext.addMessage(file, Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), parts[3], severity, null);
+						} else {
+							buildContext.addMessage(file, 0, 0, line, severity, null);
 						}
+					} else {
+						buildContext.addMessage(file, 0, 0, line, severity, null);
 					}
 				}
 			}
