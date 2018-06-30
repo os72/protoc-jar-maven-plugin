@@ -561,34 +561,40 @@ public class ProtocJarMojo extends AbstractMojo
 
 	private void processFile(File file, String version, String type, String pluginPath, File outputDir, String outputOptions) throws MojoExecutionException {
 		getLog().info("    Processing ("+ type + "): " + file.getName());
-		Collection<String> cmd = buildCommand(file, version, type, pluginPath, outputDir, outputOptions);
-		buildContext.removeMessages(file);
+
 		try {
-			int ret = 0;
+			buildContext.removeMessages(file);
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			ByteArrayOutputStream err = new ByteArrayOutputStream();
 			TeeOutputStream outTee = new TeeOutputStream(System.out, out);
 			TeeOutputStream errTee = new TeeOutputStream(System.err, err);
+			
+			int ret = 0;
+			Collection<String> cmd = buildCommand(file, version, type, pluginPath, outputDir, outputOptions);
 			if (protocCommand == null) ret = Protoc.runProtoc(cmd.toArray(new String[0]), outTee, errTee);
 			else ret = Protoc.runProtoc(protocCommand, Arrays.asList(cmd.toArray(new String[0])), outTee, errTee);
-			String outStr = out.toString();
+			
+			// add eclipse m2e warnings/errors
 			String errStr = err.toString();
 			if (!errStr.isEmpty()) {
-				int severity = ret != 0 ? BuildContext.SEVERITY_ERROR : BuildContext.SEVERITY_WARNING;
-				String[] lines = errStr.split("\\n",-1);
+				int severity = (ret != 0) ? BuildContext.SEVERITY_ERROR : BuildContext.SEVERITY_WARNING;
+				String[] lines = errStr.split("\\n", -1);
 				for (String line : lines) {
-					if (line.contains(file.getName().toString())) {
-						String[] parts = line.split(":",4);
+					int lineNum = 0;
+					int colNum = 0;
+					String msg = line;
+					if (line.contains(file.getName())) {
+						String[] parts = line.split(":", 4);
 						if (parts.length == 4) {
-							buildContext.addMessage(file, Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), parts[3], severity, null);
-						} else {
-							buildContext.addMessage(file, 0, 0, line, severity, null);
+							lineNum = Integer.parseInt(parts[1]);
+							colNum = Integer.parseInt(parts[2]);
+							msg = parts[3];
 						}
-					} else {
-						buildContext.addMessage(file, 0, 0, line, severity, null);
 					}
+					buildContext.addMessage(file, lineNum, colNum, msg, severity, null);
 				}
 			}
+			
 			if (ret != 0) throw new MojoExecutionException("protoc-jar failed for " + file + ". Exit code " + ret);
 		}
 		catch (InterruptedException e) {
