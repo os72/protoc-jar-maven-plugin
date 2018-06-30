@@ -1,6 +1,13 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.6.0 (30-Jun-2018)
+* Upgrade to protoc 3.6.0
+* New option "includeMavenTypes" to import .proto files from maven dependencies (issue #19)
+* Add Eclipse (m2e) warnings/errors
+* Supports FreeBSD/x86, Linux/POWER8 (freebsd-x86_64, linux-ppcle_64)
+* Supports Linux/ARM, provided by Google (linux-aarch_64)
+
 #### 3.5.1.1 (27-Jan-2018)
 * Fix regression in shading (due to incorrect version formatting)
 
