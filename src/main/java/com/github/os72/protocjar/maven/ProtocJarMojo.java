@@ -586,9 +586,14 @@ public class ProtocJarMojo extends AbstractMojo
 					if (line.contains(file.getName())) {
 						String[] parts = line.split(":", 4);
 						if (parts.length == 4) {
-							lineNum = Integer.parseInt(parts[1]);
-							colNum = Integer.parseInt(parts[2]);
-							msg = parts[3];
+							try {
+								lineNum = Integer.parseInt(parts[1]);
+								colNum = Integer.parseInt(parts[2]);
+								msg = parts[3];
+							}
+							catch (Exception e) {
+								getLog().warn("Failed to parse protoc warning/error for " + file);
+							}
 						}
 					}
 					buildContext.addMessage(file, lineNum, colNum, msg, severity, null);
