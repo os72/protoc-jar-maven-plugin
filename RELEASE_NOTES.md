@@ -1,6 +1,9 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.6.0.1 (1-Jul-2018)
+* Fix: handle errors when parsing protoc warnings/errors
+
 #### 3.6.0 (30-Jun-2018)
 * Upgrade to protoc 3.6.0
 * New option "includeMavenTypes" to import .proto files from maven dependencies (issue #19)
