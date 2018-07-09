@@ -249,3 +249,28 @@ protoc-jar-maven-plugin
 	</executions>
 </plugin>
 +---+
+
+  \
+  Sample usage - compile in main cycle into target/generated-sources, use src/main/protobuf as working directory for protoc execution
+
++---+
+<plugin>
+	<groupId>com.github.os72</groupId>
+	<artifactId>protoc-jar-maven-plugin</artifactId>
+	<version>3.6.0.1</version>
+	<executions>
+		<execution>
+			<phase>generate-sources</phase>
+			<goals>
+				<goal>run</goal>
+			</goals>
+			<configuration>
+				<inputDirectories>
+					<include>src/main/protobuf</include>
+				</inputDirectories>
+				<useInputDirectoryAsWorkingDir>true</useInputDirectoryAsWorkingDir>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
++---+
