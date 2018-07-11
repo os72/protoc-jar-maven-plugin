@@ -1,0 +1,5 @@
+option java_package = "com.github.os72.test";
+option java_outer_classname = "Schema3";
+
+message Msg3 {
+}

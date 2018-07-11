@@ -1,0 +1,8 @@
+option java_package = "com.github.os72.test";
+option java_outer_classname = "Schema2";
+
+import "dir3/Schema3.proto";
+
+message Msg2 {
+  optional Msg3 msg3 = 2;
+}

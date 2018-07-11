@@ -1,0 +1,10 @@
+option java_package = "com.github.os72.test";
+option java_outer_classname = "Schema1";
+
+import "google/protobuf/any.proto";
+import "dir2/Schema2.proto";
+
+message Msg1 {
+  optional google.protobuf.Any any = 1;
+  optional Msg2 msg2 = 2;
+}
