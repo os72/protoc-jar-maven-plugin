@@ -383,6 +383,7 @@ public class ProtocJarMojo extends AbstractMojo
 				tmpDir.delete(); tmpDir.mkdirs();
 				tmpDir.deleteOnExit();
 				File extraTypeDir = new File(tmpDir, "include");
+				extraTypeDir.mkdir();
 				getLog().info("Additional include types: " + extraTypeDir);
 				updateIncludeDirectories(extraTypeDir);
 				if (includeStdTypes) Protoc.extractStdTypes(ProtocVersion.getVersion("-v"+protocVersion), tmpDir); // yes, tmpDir
