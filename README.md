@@ -10,8 +10,9 @@ Simple maven plugin to compile .proto files using [protoc-jar](https://github.co
 
 Supports embedded protoc versions 2.4.1, 2.5.0, 2.6.1, 3.6.0, and any binaries (protoc and protoc plugins) available for download from maven central. Also supports pre-installed protoc binary
 
-* New: Support for Linux on POWER8 platform (linux-ppcle_64), thanks to [Apache SystemML](https://github.com/apache/systemml) folks ([nakul02](https://github.com/nakul02))
+* New: Support for Solaris on x86 platform (sunos-x86_64), thanks [siepkes](https://github.com/siepkes)
 * New: Support for FreeBSD on x86 platform (freebsd-x86_64), thanks [kjopek](https://github.com/kjopek)
+* New: Support for Linux on POWER8 platform (linux-ppcle_64), thanks to [Apache SystemML](https://github.com/apache/systemml) folks ([nakul02](https://github.com/nakul02))
 * New: Support for Linux on ARM platform (linux-aarch_64; 2.4.1, 2.6.1, 3.4.0), thanks [garciagorka](https://github.com/garciagorka)
 
 See also
