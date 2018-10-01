@@ -59,7 +59,7 @@
 						<goal>run</goal>
 					</goals>
 					<configuration>
-						<protocVersion>${protobuf.version}</protocVersion>
+						<protocArtifact>com.google.protobuf:protoc:${protobuf.version}</protocArtifact>
 						<addProtoSources>all</addProtoSources>
 						<inputDirectories>
 							<include>testprotos</include>
