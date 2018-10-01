@@ -364,6 +364,7 @@ public class ProtocJarMojo extends AbstractMojo
 		
 		// option (2) - resolve protoc maven artifact (download)
 		if (protocCommand == null && protocArtifact != null) {
+			protocVersion = ProtocVersion.getVersion("-v:"+protocArtifact).mVersion;
 			protocCommand = resolveArtifact(protocArtifact, null).getAbsolutePath();
 			try {
 				// some linuxes don't allow exec in /tmp, try one dummy execution, switch to user home if it fails
