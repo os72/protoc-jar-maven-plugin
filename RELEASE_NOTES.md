@@ -1,6 +1,14 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.6.0.2 (16-Dec-2018)
+* Fix: NPE when includeStdTypes is set to true (issue #60)
+* Add integration tests (issue #31)
+* Fix: download can fail/freeze silently (protoc-jar issue #56)
+* Set download connection timeout (5 sec)
+* Supports FreeBSD/x86, Solaris/x86, Linux/POWER8 (freebsd-x86_64, sunos-x86_64, linux-ppcle_64)
+* Supports Linux/ARM, provided by Google (linux-aarch_64)
+
 #### 3.6.0.1 (1-Jul-2018)
 * Fix: handle errors when parsing protoc warnings/errors
 
