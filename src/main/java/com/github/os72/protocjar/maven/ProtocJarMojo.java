@@ -66,7 +66,7 @@ public class ProtocJarMojo extends AbstractMojo
 {
 	private static final String DEFAULT_INPUT_DIR = "/src/main/protobuf/".replace('/', File.separatorChar);
 
-    /**
+	/**
 	 * Specifies the protoc version (default: latest version).
 	 * 
 	 * @parameter property="protocVersion"
@@ -203,7 +203,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * Ignored when {@code <outputTargets>} is given
 	 *
 	 * @parameter property="outputOptions"
-     */
+	 */
 	private String outputOptions;
 
 	/**
@@ -296,11 +296,11 @@ public class ProtocJarMojo extends AbstractMojo
 	/** @component */
 	private ArtifactResolver artifactResolver;
 	/** @component */
-    protected MavenProjectHelper projectHelper;
+	protected MavenProjectHelper projectHelper;
 
 	private File tempRoot = null;
 
-    public void execute() throws MojoExecutionException {
+	public void execute() throws MojoExecutionException {
 		if (project.getPackaging() != null && "pom".equals(project.getPackaging().toLowerCase())) {
 			getLog().info("Skipping 'pom' packaged project");
 			return;
@@ -489,12 +489,12 @@ public class ProtocJarMojo extends AbstractMojo
 	}
 
 	@SuppressWarnings("unchecked")
-    private Set<Artifact> getArtifactsForProtoExtraction(boolean transitive) {
-        if (transitive) {
-            return project.getArtifacts();
-        }
-        return project.getDependencyArtifacts();
-    }
+	private Set<Artifact> getArtifactsForProtoExtraction(boolean transitive) {
+		if (transitive) {
+			return project.getArtifacts();
+		}
+		return project.getDependencyArtifacts();
+	}
 
 	private void extractProtosFromDependencies(File dir, boolean transitive) throws IOException {
 		for (Artifact artifact : getArtifactsForProtoExtraction(transitive)) {
