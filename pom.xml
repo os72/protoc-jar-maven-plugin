@@ -10,6 +10,11 @@
   <url>https://github.com/os72/protoc-jar-maven-plugin</url>
   <description>Protocol Buffers codegen plugin - based on protoc-jar executable JAR</description>
 
+  <properties>
+	<maven.compiler.source>1.6</maven.compiler.source>
+	<maven.compiler.target>1.6</maven.compiler.target>
+  </properties>
+
   <parent>
 	<groupId>org.sonatype.oss</groupId>
 	<artifactId>oss-parent</artifactId>
@@ -87,15 +92,6 @@
 
   <build>
 	<plugins>
-		<plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-compiler-plugin</artifactId>
-		  <version>3.0</version>
-		  <configuration>
-			<source>1.5</source>
-			<target>1.5</target>
-		  </configuration>
-		</plugin>
 		<plugin>
 		  <groupId>org.apache.maven.plugins</groupId>
 		  <artifactId>maven-assembly-plugin</artifactId>
