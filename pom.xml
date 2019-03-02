@@ -5,10 +5,15 @@
   <groupId>com.github.os72</groupId>
   <artifactId>protoc-jar-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>3.6.0.2</version>
+  <version>3.6.0.3-SNAPSHOT</version>
   <name>protoc-jar-maven-plugin</name>
   <url>https://github.com/os72/protoc-jar-maven-plugin</url>
   <description>Protocol Buffers codegen plugin - based on protoc-jar executable JAR</description>
+
+  <properties>
+	<maven.compiler.source>1.6</maven.compiler.source>
+	<maven.compiler.target>1.6</maven.compiler.target>
+  </properties>
 
   <parent>
 	<groupId>org.sonatype.oss</groupId>
@@ -69,7 +74,7 @@
 	  <version>2.2</version>
 	</dependency>
 
-    <!-- test -->
+	<!-- test -->
 	<dependency>
 	  <groupId>junit</groupId>
 	  <artifactId>junit</artifactId>
@@ -85,17 +90,20 @@
 	</dependency>
   </dependencies>
 
+  <profiles>
+	<profile>
+	  <id>java8-doclint-disabled</id>
+	  <activation>
+		<jdk>[1.8,)</jdk>
+	  </activation>
+	  <properties>
+		<javadoc.opts>-Xdoclint:none</javadoc.opts>
+	  </properties>
+	</profile>
+  </profiles>
+
   <build>
 	<plugins>
-		<plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-compiler-plugin</artifactId>
-		  <version>3.0</version>
-		  <configuration>
-			<source>1.5</source>
-			<target>1.5</target>
-		  </configuration>
-		</plugin>
 		<plugin>
 		  <groupId>org.apache.maven.plugins</groupId>
 		  <artifactId>maven-assembly-plugin</artifactId>
@@ -147,6 +155,9 @@
 				<goals>
 				 <goal>jar</goal>
 				</goals>
+				<configuration>
+					<additionalparam>${javadoc.opts}</additionalparam>
+				</configuration>
 			</execution>
 		  </executions>
 		</plugin>
