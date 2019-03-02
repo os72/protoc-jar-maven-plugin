@@ -25,8 +25,8 @@ See also
 * https://github.com/google/protobuf
 
 Binaries
-* http://central.maven.org/maven2/com/google/protobuf/protoc/
-* http://central.maven.org/maven2/com/github/os72/protoc/
+* https://repo.maven.apache.org/maven2/com/google/protobuf/protoc/
+* https://repo.maven.apache.org/maven2/com/github/os72/protoc/
 * https://oss.sonatype.org/content/repositories/snapshots/com/github/os72/protoc/
 
 #### Usage
