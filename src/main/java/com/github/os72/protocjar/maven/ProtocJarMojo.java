@@ -338,7 +338,7 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 		
 		if (protocCommand == null && protocArtifact == null) {
-			if (protocVersion == null || protocVersion.length() < 1) protocVersion = ProtocVersion.PROTOC_VERSION.mVersion;
+			if (isEmpty(protocVersion)) protocVersion = ProtocVersion.PROTOC_VERSION.mVersion;
 			getLog().info("Protoc version: " + protocVersion);
 			
 			try {
@@ -485,7 +485,7 @@ public class ProtocJarMojo extends AbstractMojo
 	}
 
 	private void preprocessTarget(OutputTarget target) throws MojoExecutionException {
-		if (target.pluginArtifact != null && target.pluginArtifact.length() > 0) {
+		if (!isEmpty(target.pluginArtifact)) {
 			target.pluginPath = resolveArtifact(target.pluginArtifact, tempRoot).getAbsolutePath();
 		}
 		
