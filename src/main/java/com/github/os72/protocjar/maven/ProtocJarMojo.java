@@ -578,7 +578,7 @@ public class ProtocJarMojo extends AbstractMojo
 			
 			// add eclipse m2e warnings/errors
 			String errStr = err.toString();
-			if (!errStr.isEmpty()) {
+			if (!isEmpty(errStr)) {
 				int severity = (ret != 0) ? BuildContext.SEVERITY_ERROR : BuildContext.SEVERITY_WARNING;
 				String[] lines = errStr.split("\\n", -1);
 				for (String line : lines) {
@@ -699,6 +699,11 @@ public class ProtocJarMojo extends AbstractMojo
 		int read = 0;
 		byte[] buf = new byte[4096];
 		while ((read = in.read(buf)) > 0) out.write(buf, 0, read);		
+	}
+
+	static boolean isEmpty(String s) {
+		if (s != null && s.length() > 0) return false;
+		return true;
 	}
 
 	static class FileFilter implements IOFileFilter
