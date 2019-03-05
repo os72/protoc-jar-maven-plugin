@@ -323,8 +323,57 @@ public class ProtocJarMojo extends AbstractMojo
 				target.outputDirectory = new File(target.outputDirectory, target.outputDirectorySuffix);
 			}
 		}
+
+		long oldestFileInTarget = oldestFile(outputTargets);
+		long newestFileInSource = newestFile(inputDirectories);
+		if (newestFileInSource < oldestFileInTarget) {
+			getLog().info("Skipping code generation as proto files have not changed since last compile");
+			return;
+		}
 		
 		performProtoCompilation();
+	}
+
+	private long newestFile(File[] inputDirectories) {
+		long newest = Long.MIN_VALUE;
+		for (File inp : inputDirectories) {
+			newest = Math.max(newest, newestFile(inp));
+		}
+		return newest;
+	}
+
+	private long newestFile(File current) {
+		if (current.isDirectory()) {
+			long newest = Long.MIN_VALUE;
+			for (File entry: current.listFiles()) {
+				newest = Math.max(newest, newestFile(entry));
+			}
+			return newest;
+		}
+		else {
+			return current.lastModified();
+		}
+	}
+
+	private long oldestFile(OutputTarget[] outputTargets) {
+		long oldest = Long.MAX_VALUE;
+		for (OutputTarget target : outputTargets) {
+			oldest = Math.min(oldest, oldestFile(target.outputDirectory));
+		}
+		return oldest;
+	}
+
+	private long oldestFile(File current) {
+		if (current.isDirectory()) {
+			long oldest = Long.MAX_VALUE;
+			for (File entry: current.listFiles()) {
+				oldest = Math.min(oldest, oldestFile(entry));
+			}
+			return oldest;
+		}
+		else {
+			return current.lastModified();
+		}
 	}
 
 	private void performProtoCompilation() throws MojoExecutionException {
