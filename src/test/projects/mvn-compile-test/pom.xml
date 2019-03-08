@@ -19,12 +19,14 @@
 	  <id>os72</id>
 	  <name>Oliver Suciu</name>
 	</developer>
+	<developer>
+	  <id>pelletier</id>
+	  <name>Thomas Pelletier</name>
+	</developer>
   </developers>
 
   <properties>
 	<protobuf.version>3.6.0</protobuf.version>
-	<maven.compiler.source>1.6</maven.compiler.source>
-	<maven.compiler.target>1.6</maven.compiler.target>
   </properties>
 
   <dependencies>

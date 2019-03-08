@@ -1,8 +1,5 @@
 /*
- * Copyright 2014 protoc-jar developers
- * 
- * Incorporates code derived from https://github.com/igor-petruk/protobuf-maven-plugin
- * Copyright 2012, by Yet another Protobuf Maven Plugin Developers
+ * Copyright 2019 protoc-jar developers
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +15,17 @@
  */
 package com.github.os72.protocjar.maven;
 
-import io.takari.maven.testing.TestResources;
-import io.takari.maven.testing.executor.MavenRuntime;
-import io.takari.maven.testing.executor.MavenRuntime.MavenRuntimeBuilder;
-import io.takari.maven.testing.executor.MavenVersions;
-import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
-
 import java.io.File;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.github.os72.protocjar.ProtocVersion;
+import io.takari.maven.testing.TestResources;
+import io.takari.maven.testing.executor.MavenRuntime;
+import io.takari.maven.testing.executor.MavenRuntime.MavenRuntimeBuilder;
+import io.takari.maven.testing.executor.MavenVersions;
+import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
 
 @RunWith(MavenJUnitTestRunner.class)
 @MavenVersions({"3.2.3"})
