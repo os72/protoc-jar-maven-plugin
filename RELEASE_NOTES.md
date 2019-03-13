@@ -1,10 +1,11 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
-#### 3.7.0 (8-Mar-2019)
+#### 3.7.0 (8-Mar-2019, 13-Mar-2019)
 * Upgrade to protoc 3.7.0
 * New option "compileMavenTypes" to compile .proto files from maven dependencies
 * Update maven central download URL (https://repo.maven.apache.org/maven2/)
+* Supports FreeBSD/x86, Solaris/x86 (freebsd-x86_64, sunos-x86_64)
 * Supports Linux/ARM, Linux/POWER8, now provided by Google (linux-aarch_64, linux-ppcle_64)
 
 #### 3.6.0.2 (16-Dec-2018)
