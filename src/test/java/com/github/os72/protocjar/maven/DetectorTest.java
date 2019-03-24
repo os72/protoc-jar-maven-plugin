@@ -1,8 +1,5 @@
 /*
- * Copyright 2014 protoc-jar developers
- * 
- * Incorporates code derived from https://github.com/igor-petruk/protobuf-maven-plugin
- * Copyright 2012, by Yet another Protobuf Maven Plugin Developers
+ * Copyright 2019 protoc-jar developers
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

@@ -1,6 +1,6 @@
 /*
  * Copyright 2019 protoc-jar developers
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +21,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.github.os72.protocjar.ProtocVersion;
+
 import io.takari.maven.testing.TestResources;
 import io.takari.maven.testing.executor.MavenRuntime;
 import io.takari.maven.testing.executor.MavenRuntime.MavenRuntimeBuilder;
@@ -29,30 +31,21 @@ import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
 
 @RunWith(MavenJUnitTestRunner.class)
 @MavenVersions({"3.2.3"})
-public class MojoShadingTest
+public class MojoMvnCompileTest
 {
 	@Rule
 	public final TestResources resources = new TestResources();
 	public final MavenRuntime maven;
-	
-	public MojoShadingTest(MavenRuntimeBuilder mavenBuilder) throws Exception {
+
+	public MojoMvnCompileTest(MavenRuntimeBuilder mavenBuilder) throws Exception {
 		this.maven = mavenBuilder.withCliOptions("-B", "-U", "-e").build();
 	}
 
 	@Test
-	public void testShading360() throws Exception {
-		File basedir = resources.getBasedir("shading-test");
+	public void testImport() throws Exception {
+		File basedir = resources.getBasedir("mvn-compile-test");
 		maven.forProject(basedir)
-			.withCliOption("-Dprotobuf.version=360")
-			.execute("verify")
-			.assertErrorFreeLog();
-	}
-
-	@Test
-	public void testShading241() throws Exception {
-		File basedir = resources.getBasedir("shading-test");
-		maven.forProject(basedir)
-			.withCliOption("-Dprotobuf.version=241")
+			.withCliOption("-Dprotobuf.version=" + ProtocVersion.PROTOC_VERSION)
 			.execute("verify")
 			.assertErrorFreeLog();
 	}

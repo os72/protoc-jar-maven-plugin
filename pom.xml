@@ -5,7 +5,7 @@
   <groupId>com.github.os72</groupId>
   <artifactId>protoc-jar-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>3.7.0-SNAPSHOT</version>
+  <version>3.7.0.1-SNAPSHOT</version>
   <name>protoc-jar-maven-plugin</name>
   <url>https://github.com/os72/protoc-jar-maven-plugin</url>
   <description>Protocol Buffers codegen plugin - based on protoc-jar executable JAR</description>
@@ -41,7 +41,7 @@
 	<dependency>
 	  <groupId>com.github.os72</groupId>
 	  <artifactId>protoc-jar</artifactId>
-	  <version>3.6.0.1</version>
+	  <version>3.7.0.1</version>
 	</dependency>
 	<dependency>
 	  <groupId>org.apache.maven</groupId>
@@ -77,13 +77,25 @@
 	  <scope>test</scope>
 	</dependency>
 	<dependency>
-		<groupId>io.takari.maven.plugins</groupId>
-		<artifactId>takari-plugin-integration-testing</artifactId>
-		<version>2.9.1</version>
-		<type>pom</type>
-		<scope>test</scope>
+	  <groupId>io.takari.maven.plugins</groupId>
+	  <artifactId>takari-plugin-integration-testing</artifactId>
+	  <version>2.9.1</version>
+	  <type>pom</type>
+	  <scope>test</scope>
 	</dependency>
   </dependencies>
+
+  <profiles>
+	<profile>
+		<id>java8-doclint-disabled</id>
+		<activation>
+			<jdk>[1.8,)</jdk>
+		</activation>
+		<properties>
+			<javadoc.opts>-Xdoclint:none</javadoc.opts>
+		</properties>
+	</profile>
+  </profiles>
 
   <build>
 	<plugins>
@@ -130,9 +142,9 @@
 		  <version>2.2.1</version>
 		  <executions>
 			<execution>
-			  <id>attach-sources</id>
+				<id>attach-sources</id>
 				<goals>
-				 <goal>jar</goal>
+				  <goal>jar</goal>
 				</goals>
 			</execution>
 		  </executions>
@@ -143,10 +155,13 @@
 		  <version>2.9.1</version>
 		  <executions>
 			<execution>
-			  <id>attach-javadoc</id>
+				<id>attach-javadoc</id>
 				<goals>
-				 <goal>jar</goal>
+				  <goal>jar</goal>
 				</goals>
+				<configuration>
+				  <additionalparam>${javadoc.opts}</additionalparam>
+				</configuration>
 			</execution>
 		  </executions>
 		</plugin>

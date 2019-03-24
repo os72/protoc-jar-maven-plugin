@@ -66,7 +66,7 @@ public class ProtocJarMojo extends AbstractMojo
 {
 	private static final String DEFAULT_INPUT_DIR = "/src/main/protobuf/".replace('/', File.separatorChar);
 
-    /**
+	/**
 	 * Specifies the protoc version (default: latest version).
 	 * 
 	 * @parameter property="protocVersion"
@@ -103,6 +103,15 @@ public class ProtocJarMojo extends AbstractMojo
 	 * @parameter property="includeMavenTypes" default-value="none"
 	 */
 	private String includeMavenTypes;
+
+	/**
+	 * Specifies whether to compile .proto files from Maven dependencies.
+	 * Options: "none" (do not extract any proto files), "direct" (compile only direct dependencies),
+	 * "transitive" (compile direct and transitive dependencies).
+	 *
+	 * @parameter property="compileMavenTypes" default-value="none"
+	 */
+	private String compileMavenTypes;
 
 	/**
 	 * Specifies whether to add the source .proto files found in inputDirectories/includeDirectories to the generated jar file.
@@ -194,7 +203,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * Ignored when {@code <outputTargets>} is given
 	 *
 	 * @parameter property="outputOptions"
-     */
+	 */
 	private String outputOptions;
 
 	/**
@@ -287,11 +296,11 @@ public class ProtocJarMojo extends AbstractMojo
 	/** @component */
 	private ArtifactResolver artifactResolver;
 	/** @component */
-    protected MavenProjectHelper projectHelper;
+	protected MavenProjectHelper projectHelper;
 
 	private File tempRoot = null;
 
-    public void execute() throws MojoExecutionException {
+	public void execute() throws MojoExecutionException {
 		if (project.getPackaging() != null && "pom".equals(project.getPackaging().toLowerCase())) {
 			getLog().info("Skipping 'pom' packaged project");
 			return;
@@ -426,18 +435,26 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 		getLog().info("Protoc command: " + protocCommand);
 		
+		File tmpDir;
+		try {
+			tmpDir = File.createTempFile("protocjar", "");
+			tmpDir.delete();
+			tmpDir.mkdirs();
+			tmpDir.deleteOnExit();
+		}
+		catch (IOException e) {
+			throw new MojoExecutionException("Error creating temporary directory", e);
+		}
+		
 		// extract additional include types
 		if (includeStdTypes || hasIncludeMavenTypes()) {
 			try {
-				File tmpDir = File.createTempFile("protocjar", "");
-				tmpDir.delete(); tmpDir.mkdirs();
-				tmpDir.deleteOnExit();
 				File extraTypeDir = new File(tmpDir, "include");
 				extraTypeDir.mkdir();
 				getLog().info("Additional include types: " + extraTypeDir);
 				updateIncludeDirectories(extraTypeDir);
 				if (includeStdTypes) Protoc.extractStdTypes(ProtocVersion.getVersion("-v"+protocVersion), tmpDir); // yes, tmpDir
-				if (hasIncludeMavenTypes()) extractProtosFromDependencies(extraTypeDir);
+				if (hasIncludeMavenTypes()) extractProtosFromDependencies(extraTypeDir, includeMavenTypes.equalsIgnoreCase("transitive"));
 				deleteOnExitRecursive(extraTypeDir);
 			}
 			catch (IOException e) {
@@ -449,6 +466,22 @@ public class ProtocJarMojo extends AbstractMojo
 			File inputDir = new File(project.getBasedir().getAbsolutePath() + DEFAULT_INPUT_DIR);
 			inputDirectories = new File[] { inputDir };
 		}
+		
+		if (hasCompileMavenTypes()) {
+			try {
+				File mavenTypesCompilesDir = new File(tmpDir, "mvncompile");
+				mavenTypesCompilesDir.mkdir();
+				getLog().info("Files to compile from Maven dependencies (" + compileMavenTypes + "): " + mavenTypesCompilesDir);
+				extractProtosFromDependencies(mavenTypesCompilesDir, compileMavenTypes.equalsIgnoreCase("transitive"));
+				deleteOnExitRecursive(mavenTypesCompilesDir);	
+				inputDirectories = Arrays.copyOf(inputDirectories, inputDirectories.length + 1);
+				inputDirectories[inputDirectories.length - 1] = mavenTypesCompilesDir;
+			}
+			catch (IOException e) {
+				throw new MojoExecutionException("Error extracting files from Maven dependencies", e);
+			}
+		}
+		
 		getLog().info("Input directories:");
 		for (File input : inputDirectories) {
 			getLog().info("    " + input);
@@ -493,15 +526,18 @@ public class ProtocJarMojo extends AbstractMojo
 		return includeMavenTypes.equalsIgnoreCase("direct") || includeMavenTypes.equalsIgnoreCase("transitive");
 	}
 
-	@SuppressWarnings("unchecked")
-	private Set<Artifact> getArtifactsForProtoExtraction() {
-		if (includeMavenTypes.equalsIgnoreCase("direct")) return project.getDependencyArtifacts();
-		else if (includeMavenTypes.equalsIgnoreCase("transitive")) return project.getArtifacts();
-		return new HashSet<Artifact>();
+	private boolean hasCompileMavenTypes() {
+		return compileMavenTypes.equalsIgnoreCase("direct") || compileMavenTypes.equalsIgnoreCase("transitive");
 	}
 
-	private void extractProtosFromDependencies(File dir) throws IOException {
-		for (Artifact artifact : getArtifactsForProtoExtraction()) {
+	@SuppressWarnings("unchecked")
+	private Set<Artifact> getArtifactsForProtoExtraction(boolean transitive) {
+		if (transitive) return project.getArtifacts();
+		return project.getDependencyArtifacts();
+	}
+
+	private void extractProtosFromDependencies(File dir, boolean transitive) throws IOException {
+		for (Artifact artifact : getArtifactsForProtoExtraction(transitive)) {
 			if (artifact.getFile() == null) continue;
 			ZipInputStream zis = null;
 			try {
