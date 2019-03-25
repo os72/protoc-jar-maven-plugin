@@ -73,6 +73,13 @@ public class ProtocJarMojo extends AbstractMojo
 	private String protocVersion;
 
 	/**
+	 * If "true", skip code generation when .proto input files appear unchanged since last compilation.
+	 * 
+	 * @parameter property="optimizeCodegen" default-value="false"
+	 */
+	private boolean optimizeCodegen;
+
+	/**
 	 * Input directories that have *.proto files (or the configured extension).
 	 * If none specified then <b>src/main/protobuf</b> is used.
 	 * 
@@ -332,14 +339,26 @@ public class ProtocJarMojo extends AbstractMojo
 			}
 		}
 		
-		long oldestOutputFileTime = minFileTime(outputTargets);
-		long newestInputFileTime = maxFileTime(inputDirectories);
-		if (newestInputFileTime < oldestOutputFileTime) {
-			getLog().info("Skipping code generation, proto files seem unchanged since last compile");
-			return;
+		if (optimizeCodegen) {
+			try {
+				File successFile = new File(project.getBuild().getDirectory(), "pjmp-success.txt");
+				long oldestOutputFileTime = minFileTime(outputTargets);
+				long newestInputFileTime = maxFileTime(inputDirectories);
+				if (successFile.exists() && newestInputFileTime < oldestOutputFileTime) {
+					getLog().info("Skipping code generation, proto files appear unchanged since last compilation");
+					return;
+				}
+				successFile.delete();
+				performProtoCompilation();
+				successFile.createNewFile();
+			}
+			catch (IOException e) {
+				throw new MojoExecutionException("File operation failed", e);
+			}
 		}
-		
-		performProtoCompilation();
+		else {
+			performProtoCompilation();
+		}
 	}
 
 	private void performProtoCompilation() throws MojoExecutionException {
