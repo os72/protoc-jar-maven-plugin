@@ -75,7 +75,7 @@ public class ProtocJarMojo extends AbstractMojo
 	/**
 	 * If "true", skip code generation when .proto input files appear unchanged since last compilation.
 	 * 
-	 * @parameter property="optimizeCodegen" default-value="false"
+	 * @parameter property="optimizeCodegen" default-value="true"
 	 */
 	private boolean optimizeCodegen;
 
