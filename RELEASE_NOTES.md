@@ -1,6 +1,10 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.7.0.1 (28-Mar-2019)
+* New option "optimizeCodegen" to skip code generation when .proto input files appear unchanged (issue #41)
+* Support download via maven mirror and/or proxy (issue #68, protoc-jar issue #57)
+
 #### 3.7.0 (8-Mar-2019, 13-Mar-2019)
 * Upgrade to protoc 3.7.0
 * New option "compileMavenTypes" to compile .proto files from maven dependencies
