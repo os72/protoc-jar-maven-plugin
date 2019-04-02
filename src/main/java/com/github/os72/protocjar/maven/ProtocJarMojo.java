@@ -340,8 +340,8 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 		
 		if (optimizeCodegen) {
+			File successFile = new File(project.getBuild().getDirectory(), "pjmp-success.txt");
 			try {
-				File successFile = new File(project.getBuild().getDirectory(), "pjmp-success.txt");
 				long oldestOutputFileTime = minFileTime(outputTargets);
 				long newestInputFileTime = maxFileTime(inputDirectories);
 				if (successFile.exists() && newestInputFileTime < oldestOutputFileTime) {
@@ -350,10 +350,11 @@ public class ProtocJarMojo extends AbstractMojo
 				}
 				successFile.delete();
 				performProtoCompilation();
+				successFile.getParentFile().mkdirs();
 				successFile.createNewFile();
 			}
 			catch (IOException e) {
-				throw new MojoExecutionException("File operation failed", e);
+				throw new MojoExecutionException("File operation failed: " + successFile, e);
 			}
 		}
 		else {
