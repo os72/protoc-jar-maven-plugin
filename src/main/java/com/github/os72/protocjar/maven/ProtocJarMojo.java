@@ -339,30 +339,104 @@ public class ProtocJarMojo extends AbstractMojo
 			}
 		}
 		
-		if (optimizeCodegen) {
-			File successFile = new File(project.getBuild().getDirectory(), "pjmp-success.txt");
-			try {
-				long oldestOutputFileTime = minFileTime(outputTargets);
-				long newestInputFileTime = maxFileTime(inputDirectories);
-				if (successFile.exists() && newestInputFileTime < oldestOutputFileTime) {
-					getLog().info("Skipping code generation, proto files appear unchanged since last compilation");
-					return;
-				}
-				successFile.delete();
-				performProtoCompilation();
-				successFile.getParentFile().mkdirs();
-				successFile.createNewFile();
-			}
-			catch (IOException e) {
-				throw new MojoExecutionException("File operation failed: " + successFile, e);
-			}
+		if (!optimizeCodegen) {
+			performProtoCompilation(true);
+			return;
 		}
-		else {
-			performProtoCompilation();
+		
+		File successFile = new File(project.getBuild().getDirectory(), "pjmp-success.txt");
+		try {
+			long oldestOutputFileTime = minFileTime(outputTargets);
+			long newestInputFileTime = maxFileTime(inputDirectories);
+			if (successFile.exists() && newestInputFileTime < oldestOutputFileTime) {
+				getLog().info("Skipping code generation, proto files appear unchanged since last compilation");
+				performProtoCompilation(false);
+				return;
+			}
+			successFile.delete();
+			performProtoCompilation(true);
+			successFile.getParentFile().mkdirs();
+			successFile.createNewFile();
+		}
+		catch (IOException e) {
+			throw new MojoExecutionException("File operation failed: " + successFile, e);
 		}
 	}
 
-	private void performProtoCompilation() throws MojoExecutionException {
+	private void performProtoCompilation(boolean doCodegen) throws MojoExecutionException {
+		if (doCodegen) prepareProtoc();
+		
+		// even if doCodegen == false, we still extract extra includes/inputs because addProtoSources might be requested
+		// this could be optimized further
+		File tmpDir = createTempDir("protocjar");
+		
+		// extract additional include types
+		if (includeStdTypes || hasIncludeMavenTypes()) {
+			try {
+				File extraTypeDir = new File(tmpDir, "include");
+				extraTypeDir.mkdir();
+				getLog().info("Additional include types: " + extraTypeDir);
+				addIncludeDir(extraTypeDir);
+				if (includeStdTypes) Protoc.extractStdTypes(ProtocVersion.getVersion("-v"+protocVersion), tmpDir); // yes, tmpDir
+				if (hasIncludeMavenTypes()) extractProtosFromDependencies(extraTypeDir, includeMavenTypes.equalsIgnoreCase("transitive"));
+				deleteOnExitRecursive(extraTypeDir);
+			}
+			catch (IOException e) {
+				throw new MojoExecutionException("Error extracting additional include types", e);
+			}
+		}
+		
+		if (inputDirectories == null || inputDirectories.length == 0) {
+			File inputDir = new File(project.getBasedir().getAbsolutePath() + DEFAULT_INPUT_DIR);
+			inputDirectories = new File[] { inputDir };
+		}
+		
+		if (hasCompileMavenTypes()) {
+			try {
+				File mavenTypesCompileDir = new File(tmpDir, "mvncompile");
+				mavenTypesCompileDir.mkdir();
+				getLog().info("Files to compile from Maven dependencies (" + compileMavenTypes + "): " + mavenTypesCompileDir);
+				addInputDir(mavenTypesCompileDir);
+				extractProtosFromDependencies(mavenTypesCompileDir, compileMavenTypes.equalsIgnoreCase("transitive"));
+				deleteOnExitRecursive(mavenTypesCompileDir);	
+			}
+			catch (IOException e) {
+				throw new MojoExecutionException("Error extracting files from Maven dependencies", e);
+			}
+		}
+		
+		getLog().info("Input directories:");
+		for (File input : inputDirectories) {
+			getLog().info("    " + input);
+			if ("all".equalsIgnoreCase(addProtoSources) || "inputs".equalsIgnoreCase(addProtoSources)) {
+				List<String> incs = Arrays.asList("**/*" + extension);
+				List<String> excs = new ArrayList<String>();
+				projectHelper.addResource(project, input.getAbsolutePath(), incs, excs);			
+			}
+		}
+		
+		if (includeDirectories != null && includeDirectories.length > 0) {
+			getLog().info("Include directories:");
+			for (File include : includeDirectories) {
+				getLog().info("    " + include);
+				if ("all".equalsIgnoreCase(addProtoSources)) {
+					List<String> incs = Arrays.asList("**/*" + extension);
+					List<String> excs = new ArrayList<String>();
+					projectHelper.addResource(project, include.getAbsolutePath(), incs, excs);
+				}
+			}
+		}
+		
+		if (doCodegen) {
+			getLog().info("Output targets:");
+			for (OutputTarget target : outputTargets) getLog().info("    " + target);
+			for (OutputTarget target : outputTargets) preprocessTarget(target);
+			for (OutputTarget target : outputTargets) processTarget(target);
+		}
+		for (OutputTarget target : outputTargets) addGeneratedSources(target);
+	}
+
+	private void prepareProtoc() throws MojoExecutionException {
 		if (protocCommand != null) {
 			try {
 				Protoc.runProtoc(protocCommand, new String[]{"--version"});
@@ -411,98 +485,18 @@ public class ProtocJarMojo extends AbstractMojo
 			}
 		}
 		getLog().info("Protoc command: " + protocCommand);
-		
-		File tmpDir;
-		try {
-			tmpDir = File.createTempFile("protocjar", "");
-			tmpDir.delete();
-			tmpDir.mkdirs();
-			tmpDir.deleteOnExit();
-		}
-		catch (IOException e) {
-			throw new MojoExecutionException("Error creating temporary directory", e);
-		}
-		
-		// extract additional include types
-		if (includeStdTypes || hasIncludeMavenTypes()) {
-			try {
-				File extraTypeDir = new File(tmpDir, "include");
-				extraTypeDir.mkdir();
-				getLog().info("Additional include types: " + extraTypeDir);
-				updateIncludeDirectories(extraTypeDir);
-				if (includeStdTypes) Protoc.extractStdTypes(ProtocVersion.getVersion("-v"+protocVersion), tmpDir); // yes, tmpDir
-				if (hasIncludeMavenTypes()) extractProtosFromDependencies(extraTypeDir, includeMavenTypes.equalsIgnoreCase("transitive"));
-				deleteOnExitRecursive(extraTypeDir);
-			}
-			catch (IOException e) {
-				throw new MojoExecutionException("Error extracting additional include types", e);
-			}
-		}
-		
-		if (inputDirectories == null || inputDirectories.length == 0) {
-			File inputDir = new File(project.getBasedir().getAbsolutePath() + DEFAULT_INPUT_DIR);
-			inputDirectories = new File[] { inputDir };
-		}
-		
-		if (hasCompileMavenTypes()) {
-			try {
-				File mavenTypesCompilesDir = new File(tmpDir, "mvncompile");
-				mavenTypesCompilesDir.mkdir();
-				getLog().info("Files to compile from Maven dependencies (" + compileMavenTypes + "): " + mavenTypesCompilesDir);
-				extractProtosFromDependencies(mavenTypesCompilesDir, compileMavenTypes.equalsIgnoreCase("transitive"));
-				deleteOnExitRecursive(mavenTypesCompilesDir);	
-				inputDirectories = Arrays.copyOf(inputDirectories, inputDirectories.length + 1);
-				inputDirectories[inputDirectories.length - 1] = mavenTypesCompilesDir;
-			}
-			catch (IOException e) {
-				throw new MojoExecutionException("Error extracting files from Maven dependencies", e);
-			}
-		}
-		
-		getLog().info("Input directories:");
-		for (File input : inputDirectories) {
-			getLog().info("    " + input);
-			if ("all".equalsIgnoreCase(addProtoSources) || "inputs".equalsIgnoreCase(addProtoSources)) {
-				List<String> incs = Arrays.asList("**/*" + extension);
-				List<String> excs = new ArrayList<String>();
-				projectHelper.addResource(project, input.getAbsolutePath(), incs, excs);			
-			}
-		}
-		
-		if (includeDirectories != null && includeDirectories.length > 0) {
-			getLog().info("Include directories:");
-			for (File include : includeDirectories) {
-				getLog().info("    " + include);
-				if ("all".equalsIgnoreCase(addProtoSources)) {
-					List<String> incs = Arrays.asList("**/*" + extension);
-					List<String> excs = new ArrayList<String>();
-					projectHelper.addResource(project, include.getAbsolutePath(), incs, excs);
-				}
-			}
-		}
-		
-		getLog().info("Output targets:");
-		for (OutputTarget target : outputTargets) getLog().info("    " + target);
-		for (OutputTarget target : outputTargets) preprocessTarget(target);
-		for (OutputTarget target : outputTargets) processTarget(target);
 	}
 
-	private void updateIncludeDirectories(File additionalIncludes) {
-		if (includeDirectories != null && includeDirectories.length > 0) {
-			List<File> includeDirList = new ArrayList<File>();
-			includeDirList.add(additionalIncludes);
-			includeDirList.addAll(Arrays.asList(includeDirectories));
-			includeDirectories = includeDirList.toArray(new File[0]);
-		}
-		else {
-			includeDirectories = new File[] { additionalIncludes };
-		}
+	private void addIncludeDir(File dir) {
+		includeDirectories = addDir(includeDirectories, dir);
+	}
+	private void addInputDir(File dir) {
+		inputDirectories = addDir(inputDirectories, dir);
 	}
 
 	private boolean hasIncludeMavenTypes() {
 		return includeMavenTypes.equalsIgnoreCase("direct") || includeMavenTypes.equalsIgnoreCase("transitive");
 	}
-
 	private boolean hasCompileMavenTypes() {
 		return compileMavenTypes.equalsIgnoreCase("direct") || compileMavenTypes.equalsIgnoreCase("transitive");
 	}
@@ -568,7 +562,7 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private void processTarget(OutputTarget target) throws MojoExecutionException {		
+	private void processTarget(OutputTarget target) throws MojoExecutionException {
 		boolean shaded = false;
 		String targetType = target.type;
 		if (targetType.equals("java-shaded") || targetType.equals("java_shaded")) {
@@ -605,17 +599,19 @@ public class ProtocJarMojo extends AbstractMojo
 			catch (IOException e) {
 				throw new MojoExecutionException("Error occurred during shading", e);
 			}
-		}
-		
+		}		
+	}
+
+	private void addGeneratedSources(OutputTarget target) throws MojoExecutionException {
 		boolean mainAddSources = "main".endsWith(target.addSources);
 		boolean testAddSources = "test".endsWith(target.addSources);
 		
 		if (mainAddSources) {
-			getLog().info("Adding generated classes to classpath");
+			getLog().info("Adding generated sources (" + target.type + "): " + target.outputDirectory);
 			project.addCompileSourceRoot(target.outputDirectory.getAbsolutePath());
 		}
 		if (testAddSources) {
-			getLog().info("Adding generated classes to test classpath");
+			getLog().info("Adding generated test sources (" + target.type + "): " + target.outputDirectory);
 			project.addTestCompileSourceRoot(target.outputDirectory.getAbsolutePath());
 		}
 		if (mainAddSources || testAddSources) {
@@ -756,6 +752,30 @@ public class ProtocJarMojo extends AbstractMojo
 		long maxTime = Long.MIN_VALUE;
 		for (File entry: current.listFiles()) maxTime = Math.max(maxTime, maxFileTime(entry));
 		return maxTime;
+	}
+
+	static File createTempDir(String name) throws MojoExecutionException {
+		try {
+			File tmpDir = File.createTempFile(name, "");
+			tmpDir.delete();
+			tmpDir.mkdirs();
+			tmpDir.deleteOnExit();
+			return tmpDir;
+		}
+		catch (IOException e) {
+			throw new MojoExecutionException("Error creating temporary directory: " + name, e);
+		}
+	}
+
+	static File[] addDir(File[] dirs, File dir) {
+		if (dirs == null) {
+			dirs = new File[] {dir};
+		}
+		else {
+			dirs = Arrays.copyOf(dirs, dirs.length + 1);
+			dirs[dirs.length - 1] = dir;
+		}
+		return dirs;
 	}
 
 	static void deleteOnExitRecursive(File dir) {
