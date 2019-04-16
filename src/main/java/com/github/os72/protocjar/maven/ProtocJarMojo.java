@@ -324,6 +324,8 @@ public class ProtocJarMojo extends AbstractMojo
 			target.outputOptions = outputOptions;
 			outputTargets = new OutputTarget[] {target};
 		}
+
+		boolean missingOutputDirectory = false;
 		
 		for (OutputTarget target : outputTargets) {
 			target.addSources = target.addSources.toLowerCase().trim();
@@ -337,9 +339,15 @@ public class ProtocJarMojo extends AbstractMojo
 			if (target.outputDirectorySuffix != null) {
 				target.outputDirectory = new File(target.outputDirectory, target.outputDirectorySuffix);
 			}
+
+			String[] outputFiles = target.outputDirectory.list();
+
+			if(outputFiles == null || outputFiles.length == 0) {
+				missingOutputDirectory = true;
+			}
 		}
 		
-		if (!optimizeCodegen) {
+		if (!optimizeCodegen || missingOutputDirectory) {
 			performProtoCompilation(true);
 			return;
 		}
