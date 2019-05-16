@@ -341,8 +341,7 @@ public class ProtocJarMojo extends AbstractMojo
 			}
 
 			String[] outputFiles = target.outputDirectory.list();
-
-			if(outputFiles == null || outputFiles.length == 0) {
+			if (outputFiles == null || outputFiles.length == 0) {
 				missingOutputDirectory = true;
 			}
 		}
