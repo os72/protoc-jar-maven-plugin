@@ -1,6 +1,11 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.7.1 (17-May-2019)
+* Upgrade to protoc 3.7.1
+* Fix: regenerate code if missing an output directory (issue #72)
+* Fix: error extracting maven include types (issue #74)
+
 #### 3.7.0.2 (3-Apr-2019)
 * Some fixes for option "optimizeCodegen" (issue #41, issue #71)
 

@@ -10,7 +10,7 @@ protoc-jar-maven-plugin
 * Goals Overview
 
     * {{{./run-mojo.html}protoc-jar:run}} Compiles .proto files using protoc-jar embedded protoc compiler.
-    Supports embedded protoc versions 2.4.1, 2.5.0, 2.6.1, 3.7.0, and any binaries (protoc and protoc plugins) available for download from maven central.
+    Supports embedded protoc versions 2.4.1, 2.5.0, 2.6.1, 3.7.1, and any binaries (protoc and protoc plugins) available for download from maven central.
     Also supports pre-installed protoc binary
 
 * Usage
@@ -28,7 +28,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.7.0.2</version>
+	<version>3.7.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -47,7 +47,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.7.0.2</version>
+	<version>3.7.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -76,7 +76,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.7.0.2</version>
+	<version>3.7.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -110,7 +110,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.7.0.2</version>
+	<version>3.7.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -137,7 +137,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.7.0.2</version>
+	<version>3.7.1</version>
 	<executions>
 		<execution>
 			<phase>generate-test-sources</phase>
@@ -164,7 +164,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.7.0.2</version>
+	<version>3.7.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -192,7 +192,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.7.0.2</version>
+	<version>3.7.1</version>
 	<executions>
 		<execution>
 			<phase>generate-test-sources</phase>
@@ -229,7 +229,7 @@ protoc-jar-maven-plugin
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.7.0.2</version>
+	<version>3.7.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
