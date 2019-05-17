@@ -517,7 +517,7 @@ public class ProtocJarMojo extends AbstractMojo
 	private void extractProtosFromDependencies(File dir, boolean transitive) throws IOException {
 		for (Artifact artifact : getArtifactsForProtoExtraction(transitive)) {
 			if (artifact.getFile() == null) continue;
-			getLog().info("  Scanning artifact: " + artifact.getFile());
+			getLog().debug("  Scanning artifact: " + artifact.getFile());
 			ZipInputStream zis = null;
 			try {
 				zis = new ZipInputStream(new FileInputStream(artifact.getFile()));
