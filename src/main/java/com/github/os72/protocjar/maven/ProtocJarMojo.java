@@ -726,8 +726,8 @@ public class ProtocJarMojo extends AbstractMojo
 			String platform = detectorProps.getProperty("os.detected.classifier");
 			
 			getLog().info("Resolving artifact: " + artifactSpec + ", platform: " + platform);
-			String[] as = artifactSpec.split(":");
-			Artifact artifact = artifactFactory.createDependencyArtifact(as[0], as[1], VersionRange.createFromVersionSpec(as[2]), "exe", platform, Artifact.SCOPE_RUNTIME);
+			String[] as = parseArtifactSpec(artifactSpec, platform);
+			Artifact artifact = artifactFactory.createDependencyArtifact(as[0], as[1], VersionRange.createFromVersionSpec(as[2]), as[3], as[4], Artifact.SCOPE_RUNTIME);
 			artifactResolver.resolve(artifact, remoteRepositories, localRepository);
 			
 			File tempFile = File.createTempFile(as[1], ".exe", dir);
@@ -740,6 +740,13 @@ public class ProtocJarMojo extends AbstractMojo
 			throw new MojoExecutionException("Error resolving artifact: " + artifactSpec, e);
 		}
 	}
+	static String[] parseArtifactSpec(String artifactSpec, String platform) {
+		String[] as = artifactSpec.split(":");
+		String[] ret = Arrays.copyOf(as, 5);		
+		if (ret[3] == null) ret[3] = "exe";
+		if (ret[4] == null) ret[4] = platform;
+		return ret;
+    }
 
 	static long minFileTime(OutputTarget[] outputTargets) {
 		long minTime = Long.MAX_VALUE;

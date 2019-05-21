@@ -15,6 +15,9 @@
  */
 package com.github.os72.protocjar.maven;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -23,13 +26,34 @@ import com.github.os72.protocjar.PlatformDetector;
 
 public class DetectorTest extends PlatformDetector
 {
-    @Test
+	@Test
+	public void testArtifactSpec() throws Exception {
+		String[] as;
+		String str;
+		
+		as = ProtocJarMojo.parseArtifactSpec("io.grpc:protoc-gen-grpc-java:1.0.1", "windows-x86_64");
+		str = Arrays.asList(as).toString();
+		log(str);
+		assertEquals("[io.grpc, protoc-gen-grpc-java, 1.0.1, exe, windows-x86_64]", str);
+		
+		as = ProtocJarMojo.parseArtifactSpec("com.thesamet.scalapb:protoc-gen-scalapb:0.9.0-M5:sh:unix", "windows-x86_64");
+		str = Arrays.asList(as).toString();
+		log(str);
+		assertEquals("[com.thesamet.scalapb, protoc-gen-scalapb, 0.9.0-M5, sh, unix]", str);
+		
+		as = ProtocJarMojo.parseArtifactSpec("com.thesamet.scalapb:protoc-gen-scalapb:0.9.0-M5:bat:windows", "windows-x86_64");
+		str = Arrays.asList(as).toString();
+		log(str);
+		assertEquals("[com.thesamet.scalapb, protoc-gen-scalapb, 0.9.0-M5, bat, windows]", str);
+    }
+
+	@Test
 	public void testDetect() throws Exception {
-    	Properties props = new Properties();
-    	detect(props, null);
-    	log(props);
+		Properties props = new Properties();
+		detect(props, null);
+		log(props);
 	}
-    
+
 	@Override
 	protected void log(String msg) {
 		System.out.println(msg);
