@@ -1,6 +1,10 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.8.0 (9-Jun-2019)
+* Upgrade to protoc 3.8.0
+* Support custom classifier extensions for plugin artifacts (issue #75)
+
 #### 3.7.1 (17-May-2019)
 * Upgrade to protoc 3.7.1
 * Fix: regenerate code if missing an output directory (issue #72)
