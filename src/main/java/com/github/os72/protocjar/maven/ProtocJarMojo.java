@@ -339,14 +339,14 @@ public class ProtocJarMojo extends AbstractMojo
 			if (target.outputDirectorySuffix != null) {
 				target.outputDirectory = new File(target.outputDirectory, target.outputDirectorySuffix);
 			}
-
+			
 			String[] outputFiles = target.outputDirectory.list();
 			if (outputFiles == null || outputFiles.length == 0) {
 				missingOutputDirectory = true;
 			}
 		}
 		
-		if (!optimizeCodegen || missingOutputDirectory) {
+		if (!optimizeCodegen) {
 			performProtoCompilation(true);
 			return;
 		}
@@ -355,7 +355,7 @@ public class ProtocJarMojo extends AbstractMojo
 		try {
 			long oldestOutputFileTime = minFileTime(outputTargets);
 			long newestInputFileTime = maxFileTime(inputDirectories);
-			if (successFile.exists() && newestInputFileTime < oldestOutputFileTime) {
+			if (successFile.exists() && newestInputFileTime < oldestOutputFileTime && !missingOutputDirectory) {
 				getLog().info("Skipping code generation, proto files appear unchanged since last compilation");
 				performProtoCompilation(false);
 				return;
