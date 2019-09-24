@@ -538,7 +538,7 @@ public class ProtocJarMojo extends AbstractMojo
 					InputStream is = null;
 					try {
 						is = new FileInputStream(f);
-						String name = f.getAbsolutePath().replace(dir.getAbsolutePath(), "");
+						String name = f.getAbsolutePath().replace(artifact.getFile().getAbsolutePath(), "");
 						if (name.startsWith("/")) {
 							name = name.substring(1);
 						}
