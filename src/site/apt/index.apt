@@ -104,6 +104,40 @@ protoc-jar-maven-plugin
 +---+
 
   \
+  Sample usage - javalite, multiple output targets:
+
++---+
+<plugin>
+	<groupId>com.github.os72</groupId>
+	<artifactId>protoc-jar-maven-plugin</artifactId>
+	<version>3.9.2</version>
+	<executions>
+		<execution>
+			<phase>generate-sources</phase>
+			<goals>
+				<goal>run</goal>
+			</goals>
+			<configuration>
+				<inputDirectories>
+					<include>src/main/resources</include>
+				</inputDirectories>
+				<outputTargets>
+					<outputTarget>
+						<type>java</type>
+						<outputOptions>lite</outputOptions>
+					</outputTarget>
+					<outputTarget>
+						<type>python</type>
+						<outputOptions>lite</outputOptions>
+					</outputTarget>
+				</outputTargets>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
++---+
+
+  \
   Sample usage - compile in main cycle into src/main/java, don't alter project
 
 +---+

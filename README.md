@@ -111,6 +111,38 @@ Sample usage - download protoc and plugin binaries from maven repo, multiple out
 </plugin>
 ```
 
+Sample usage - javalite, multiple output targets:
+```xml
+<plugin>
+	<groupId>com.github.os72</groupId>
+	<artifactId>protoc-jar-maven-plugin</artifactId>
+	<version>3.9.2</version>
+	<executions>
+		<execution>
+			<phase>generate-sources</phase>
+			<goals>
+				<goal>run</goal>
+			</goals>
+			<configuration>
+				<inputDirectories>
+					<include>src/main/resources</include>
+				</inputDirectories>
+				<outputTargets>
+					<outputTarget>
+						<type>java</type>
+						<outputOptions>lite</outputOptions>
+					</outputTarget>
+					<outputTarget>
+						<type>python</type>
+						<outputOptions>lite</outputOptions>
+					</outputTarget>
+				</outputTargets>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+```
+
 Sample usage - compile in test cycle, multiple output targets, don't alter project (`<addSources>: none`):
 ```xml
 <plugin>
