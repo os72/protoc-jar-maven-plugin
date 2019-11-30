@@ -514,32 +514,66 @@ public class ProtocJarMojo extends AbstractMojo
 		return project.getDependencyArtifacts();
 	}
 
+	private List<File> listFilesRecursively(File directory) {
+		List<File> result = new ArrayList<>();
+		for (File f : directory.listFiles()) {
+			if (f.isFile() && f.canRead() && f.getName().toLowerCase().endsWith(extension)) {
+				result.add(f);
+			}
+			else if (f.isDirectory() && f.canExecute()) {
+				result.addAll(listFilesRecursively(f));
+			}
+		}
+
+		return result;
+	}
+
 	private void extractProtosFromDependencies(File dir, boolean transitive) throws IOException {
 		for (Artifact artifact : getArtifactsForProtoExtraction(transitive)) {
 			if (artifact.getFile() == null) continue;
 			getLog().debug("  Scanning artifact: " + artifact.getFile());
-			ZipInputStream zis = null;
-			try {
-				zis = new ZipInputStream(new FileInputStream(artifact.getFile()));
-				ZipEntry ze;
-				while ((ze = zis.getNextEntry()) != null) {
-					if (ze.isDirectory() || !ze.getName().toLowerCase().endsWith(extension)) continue;
-					writeProtoFile(dir, zis, ze);
-					zis.closeEntry();
+
+			if (artifact.getFile().isDirectory()) {
+				for (File f : listFilesRecursively(artifact.getFile())) {
+					InputStream is = null;
+					try {
+						is = new FileInputStream(f);
+						String name = f.getAbsolutePath().replace(artifact.getFile().getAbsolutePath(), "");
+						if (name.startsWith("/")) {
+							name = name.substring(1);
+						}
+						writeProtoFile(dir, is, name);
+					} catch (IOException e) {
+						getLog().info("  Error scanning artifact: " + artifact.getFile() + ": " + e);
+					} finally {
+						if (is != null) {
+							is.close();
+						}
+					}
 				}
 			}
-			catch (IOException e) {
-				getLog().info("  Error scanning artifact: " + artifact.getFile() + ": " + e);				
-			}
-			finally {
-				if (zis != null) zis.close();
+			else {
+				ZipInputStream zis = null;
+				try {
+					zis = new ZipInputStream(new FileInputStream(artifact.getFile()));
+					ZipEntry ze;
+					while ((ze = zis.getNextEntry()) != null) {
+						if (ze.isDirectory() || !ze.getName().toLowerCase().endsWith(extension)) continue;
+						writeProtoFile(dir, zis, ze.getName());
+						zis.closeEntry();
+					}
+				} catch (IOException e) {
+					getLog().info("  Error scanning artifact: " + artifact.getFile() + ": " + e);
+				} finally {
+					if (zis != null) zis.close();
+				}
 			}
 		}
 	}
 
-	private void writeProtoFile(File dir, ZipInputStream zis, ZipEntry protoEntry) throws IOException {
-		getLog().info("    " + protoEntry.getName());
-		File protoOut = new File(dir, protoEntry.getName());
+	private void writeProtoFile(File dir, InputStream zis, String name) throws IOException {
+		getLog().info("    " + name);
+		File protoOut = new File(dir, name);
 		protoOut.getParentFile().mkdirs();
 		FileOutputStream fos = null;
 		try {
