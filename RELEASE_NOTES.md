@@ -1,6 +1,9 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.10.1 (30-Nov-2019)
+* Upgrade to protoc 3.10.1
+
 #### 3.9.2 (29-Nov-2019)
 * Upgrade to protoc 3.9.2
 * Add test and documentation for javalite output option (issue #80)

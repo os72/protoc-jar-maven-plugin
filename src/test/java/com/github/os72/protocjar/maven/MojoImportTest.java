@@ -45,7 +45,7 @@ public class MojoImportTest
 	public void testImport() throws Exception {
 		File basedir = resources.getBasedir("import-test");
 		maven.forProject(basedir)
-			.withCliOption("-Dprotobuf.version=" + ProtocVersion.PROTOC_VERSION)
+			//.withCliOption("-Dprotobuf.version=" + ProtocVersion.PROTOC_VERSION)
 			.execute("verify")
 			.assertErrorFreeLog();
 	}

@@ -2,13 +2,13 @@ protoc-jar-maven-plugin
 =======================
 
 Protocol Buffers protobuf maven plugin - performs protobuf code generation using [protoc-jar](https://github.com/os72/protoc-jar) multi-platform executable protoc JAR.
-Available on Maven Central: https://repo.maven.apache.org/maven2/com/github/os72/protoc-jar-maven-plugin/3.9.2/
+Available on Maven Central: https://repo.maven.apache.org/maven2/com/github/os72/protoc-jar-maven-plugin/3.10.1/
 
-[![Maven Central](https://img.shields.io/badge/maven%20central-3.9.2-brightgreen.svg)](http://search.maven.org/#artifactdetails|com.github.os72|protoc-jar-maven-plugin|3.9.2|)
+[![Maven Central](https://img.shields.io/badge/maven%20central-3.10.1-brightgreen.svg)](http://search.maven.org/#artifactdetails|com.github.os72|protoc-jar-maven-plugin|3.10.1|)
 
 Simple maven plugin to compile .proto files using [protoc-jar](https://github.com/os72/protoc-jar) embedded protoc compiler, providing some portability across the major platforms (Linux, Mac/OSX, and Windows). At build time the plugin detects the platform and executes the corresponding protoc binary.
 
-Supports embedded protoc versions 2.4.1, 2.5.0, 2.6.1, 3.9.2, and any binaries (protoc and protoc plugins) available for download from maven central. Also supports pre-installed protoc binary
+Supports embedded protoc versions 2.4.1, 2.5.0, 2.6.1, 3.10.1, and any binaries (protoc and protoc plugins) available for download from maven central. Also supports pre-installed protoc binary
 
 * Support for FreeBSD on x86 platform (freebsd-x86_64), thanks [kjopek](https://github.com/kjopek)
 * Support for Solaris on x86 platform (sunos-x86_64), thanks [siepkes](https://github.com/siepkes)
@@ -40,7 +40,7 @@ Sample usage - compile in main cycle into `target/generated-sources`, add genera
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.9.2</version>
+	<version>3.10.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -57,7 +57,7 @@ Sample usage - compile in main cycle into `target/generated-sources`, add genera
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.9.2</version>
+	<version>3.10.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -84,7 +84,7 @@ Sample usage - download protoc and plugin binaries from maven repo, multiple out
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.9.2</version>
+	<version>3.10.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -116,7 +116,7 @@ Sample usage - javalite, multiple output targets:
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.9.2</version>
+	<version>3.10.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>
@@ -148,7 +148,7 @@ Sample usage - compile in test cycle, multiple output targets, don't alter proje
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.9.2</version>
+	<version>3.10.1</version>
 	<executions>
 		<execution>
 			<phase>generate-test-sources</phase>
@@ -183,7 +183,7 @@ Sample usage - generate java shaded for use with `protobuf-java-shaded-241`, don
 <plugin>
 	<groupId>com.github.os72</groupId>
 	<artifactId>protoc-jar-maven-plugin</artifactId>
-	<version>3.9.2</version>
+	<version>3.10.1</version>
 	<executions>
 		<execution>
 			<phase>generate-sources</phase>

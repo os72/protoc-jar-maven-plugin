@@ -26,7 +26,7 @@
   </developers>
 
   <properties>
-	<protobuf.version>3.9.2</protobuf.version>
+	<protobuf.version>3.10.0</protobuf.version>
   </properties>
 
   <dependencies>
@@ -52,7 +52,6 @@
 						<goal>run</goal>
 					</goals>
 					<configuration>
-						<protocVersion>${protobuf.version}</protocVersion>
 						<addProtoSources>all</addProtoSources>
 						<includeMavenTypes>direct</includeMavenTypes>
 						<compileMavenTypes>direct</compileMavenTypes>

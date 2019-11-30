@@ -45,7 +45,7 @@ public class MojoJavaLiteTest
 	public void testBasic() throws Exception {
 		File basedir = resources.getBasedir("javalite-test");
 		maven.forProject(basedir)
-			.withCliOption("-Dprotobuf.version=" + ProtocVersion.PROTOC_VERSION)
+			//.withCliOption("-Dprotobuf.version=" + ProtocVersion.PROTOC_VERSION)
 			.execute("verify")
 			.assertErrorFreeLog();
 	}
