@@ -1,6 +1,11 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.9.2 (29-Nov-2019)
+* Upgrade to protoc 3.9.2
+* Add test and documentation for javalite output option (issue #80)
+* Small fix for optimizeCodegen option
+
 #### 3.8.0 (9-Jun-2019)
 * Upgrade to protoc 3.8.0
 * Support custom classifier extensions for plugin artifacts (issue #75)
