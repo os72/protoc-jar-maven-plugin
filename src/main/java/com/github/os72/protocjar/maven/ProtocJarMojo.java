@@ -515,7 +515,7 @@ public class ProtocJarMojo extends AbstractMojo
 	}
 
 	private List<File> listFilesRecursively(File directory) {
-		List<File> result = new ArrayList<>();
+		List<File> result = new ArrayList<File>();
 		for (File f : directory.listFiles()) {
 			if (f.isFile() && f.canRead() && f.getName().toLowerCase().endsWith(extension)) {
 				result.add(f);
