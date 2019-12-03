@@ -508,67 +508,53 @@ public class ProtocJarMojo extends AbstractMojo
 		return compileMavenTypes.equalsIgnoreCase("direct") || compileMavenTypes.equalsIgnoreCase("transitive");
 	}
 
+	private void extractProtosFromDependencies(File dir, boolean transitive) throws IOException {
+		for (Artifact artifact : getArtifactsForProtoExtraction(transitive)) {
+			if (artifact.getFile() == null) continue;
+			getLog().debug("  Scanning artifact: " + artifact.getFile());
+			InputStream is = null;
+			try {
+				if (artifact.getFile().isDirectory()) {
+					for (File f : listFilesRecursively(artifact.getFile(), extension, new ArrayList<File>())) {
+						is = new FileInputStream(f);
+						String name = f.getAbsolutePath().replace(artifact.getFile().getAbsolutePath(), "");
+						if (name.startsWith("/")) name = name.substring(1);
+						writeProtoFile(dir, is, name);
+						is.close();
+					}
+				}
+				else {
+					ZipInputStream zis = new ZipInputStream(new FileInputStream(artifact.getFile()));
+					is = zis;
+					ZipEntry ze;
+					while ((ze = zis.getNextEntry()) != null) {
+						if (ze.isDirectory() || !ze.getName().toLowerCase().endsWith(extension)) continue;
+						writeProtoFile(dir, zis, ze.getName());
+						zis.closeEntry();
+					}					
+				}
+			}
+			catch (IOException e) {
+				getLog().info("  Error scanning artifact: " + artifact.getFile() + ": " + e);
+			}
+			finally {
+				if (is != null) is.close();
+			}			
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	private Set<Artifact> getArtifactsForProtoExtraction(boolean transitive) {
 		if (transitive) return project.getArtifacts();
 		return project.getDependencyArtifacts();
 	}
 
-	private List<File> listFilesRecursively(File directory) {
-		List<File> result = new ArrayList<File>();
+	private List<File> listFilesRecursively(File directory, String ext, List<File> list) {
 		for (File f : directory.listFiles()) {
-			if (f.isFile() && f.canRead() && f.getName().toLowerCase().endsWith(extension)) {
-				result.add(f);
-			}
-			else if (f.isDirectory() && f.canExecute()) {
-				result.addAll(listFilesRecursively(f));
-			}
+			if (f.isFile() && f.canRead() && f.getName().toLowerCase().endsWith(ext)) list.add(f);
+			else if (f.isDirectory() && f.canExecute()) listFilesRecursively(f, ext, list);
 		}
-
-		return result;
-	}
-
-	private void extractProtosFromDependencies(File dir, boolean transitive) throws IOException {
-		for (Artifact artifact : getArtifactsForProtoExtraction(transitive)) {
-			if (artifact.getFile() == null) continue;
-			getLog().debug("  Scanning artifact: " + artifact.getFile());
-
-			if (artifact.getFile().isDirectory()) {
-				for (File f : listFilesRecursively(artifact.getFile())) {
-					InputStream is = null;
-					try {
-						is = new FileInputStream(f);
-						String name = f.getAbsolutePath().replace(artifact.getFile().getAbsolutePath(), "");
-						if (name.startsWith("/")) {
-							name = name.substring(1);
-						}
-						writeProtoFile(dir, is, name);
-					} catch (IOException e) {
-						getLog().info("  Error scanning artifact: " + artifact.getFile() + ": " + e);
-					} finally {
-						if (is != null) {
-							is.close();
-						}
-					}
-				}
-			}
-			else {
-				ZipInputStream zis = null;
-				try {
-					zis = new ZipInputStream(new FileInputStream(artifact.getFile()));
-					ZipEntry ze;
-					while ((ze = zis.getNextEntry()) != null) {
-						if (ze.isDirectory() || !ze.getName().toLowerCase().endsWith(extension)) continue;
-						writeProtoFile(dir, zis, ze.getName());
-						zis.closeEntry();
-					}
-				} catch (IOException e) {
-					getLog().info("  Error scanning artifact: " + artifact.getFile() + ": " + e);
-				} finally {
-					if (zis != null) zis.close();
-				}
-			}
-		}
+		return list;
 	}
 
 	private void writeProtoFile(File dir, InputStream zis, String name) throws IOException {
