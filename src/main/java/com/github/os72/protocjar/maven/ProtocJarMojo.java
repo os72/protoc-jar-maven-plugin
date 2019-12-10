@@ -625,7 +625,7 @@ public class ProtocJarMojo extends AbstractMojo
 		if (shaded) {
 			try {
 				getLog().info("    Shading (version " + protocVersion + "): " + target.outputDirectory);
-				Protoc.doShading(target.outputDirectory, protocVersion.replace(".", ""));
+				Protoc.doShading(target.outputDirectory, protocVersion);
 			}
 			catch (IOException e) {
 				throw new MojoExecutionException("Error occurred during shading", e);
