@@ -45,8 +45,8 @@ public class MojoBasicTest
 	public void testBasic() throws Exception {
 		File basedir = resources.getBasedir("basic-test");
 		maven.forProject(basedir)
-			.withCliOption("-Dprotobuf.version=3.10.0")// + ProtocVersion.PROTOC_VERSION)
-			.withCliOption("-Dprotoc.version=3.10.1")// + ProtocVersion.PROTOC_VERSION)
+			.withCliOption("-Dprotobuf.version=" + ProtocVersion.PROTOC_VERSION)
+			.withCliOption("-Dprotoc.version=" + ProtocVersion.PROTOC_VERSION)
 			.execute("verify")
 			.assertErrorFreeLog();
 	}

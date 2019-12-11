@@ -1,6 +1,11 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.11.1 (10-Dec-2019)
+* Upgrade to protoc 3.11.1
+* Support using .proto files in dependencies that aren't packaged (issue #79)
+* Small enhancement for shading naming convention
+
 #### 3.10.1 (30-Nov-2019)
 * Upgrade to protoc 3.10.1
 

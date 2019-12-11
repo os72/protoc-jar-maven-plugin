@@ -45,7 +45,7 @@ public class MojoMvnCompileTest
 	public void testImport() throws Exception {
 		File basedir = resources.getBasedir("mvn-compile-test");
 		maven.forProject(basedir)
-			//.withCliOption("-Dprotobuf.version=" + ProtocVersion.PROTOC_VERSION)
+			.withCliOption("-Dprotobuf.version=" + ProtocVersion.PROTOC_VERSION)
 			.execute("verify")
 			.assertErrorFreeLog();
 	}
