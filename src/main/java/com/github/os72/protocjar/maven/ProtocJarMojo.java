@@ -148,6 +148,16 @@ public class ProtocJarMojo extends AbstractMojo
 	private String addSources;
 
 	/**
+	 * Specifies whether to include all dependencies of the input files in the descriptor set
+	 * Options: "true", "false" (default: "true")
+	 * <p>
+	 * Ignored when the {@code type} of {@code <outputTarget>} is not {@code descriptor}
+	 *
+	 * @parameter property="includeImports" default-value="true"
+	 */
+	private boolean includeImports;
+
+	/**
 	 * If this parameter is set to "true" output folder is cleaned prior to the
 	 * build. This will not let old and new classes coexist after package or
 	 * class rename in your IDE cache or after non-clean rebuild. Set this to
@@ -708,7 +718,9 @@ public class ProtocJarMojo extends AbstractMojo
 		if ("descriptor".equals(type)) {
 			File outFile = new File(outputDir, file.getName());
 			cmd.add("--descriptor_set_out=" + FilenameUtils.removeExtension(outFile.toString()) + ".desc");
-			cmd.add("--include_imports");
+			if (includeImports) {
+				cmd.add("--include_imports");
+			}
 			if (outputOptions != null) {
 				for (String arg : outputOptions.split("\\s+")) cmd.add(arg);
 			}
