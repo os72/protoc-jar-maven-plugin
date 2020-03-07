@@ -762,7 +762,7 @@ public class ProtocJarMojo extends AbstractMojo
 			Artifact artifact = artifactFactory.createDependencyArtifact(as[0], as[1], VersionRange.createFromVersionSpec(as[2]), as[3], as[4], Artifact.SCOPE_RUNTIME);
 			artifactResolver.resolve(artifact, remoteRepositories, localRepository);
 			
-			File tempFile = File.createTempFile(as[1], ".exe", dir);
+			File tempFile = File.createTempFile(as[1], "."+as[3], dir);
 			copyFile(artifact.getFile(), tempFile);
 			tempFile.setExecutable(true);
 			tempFile.deleteOnExit();

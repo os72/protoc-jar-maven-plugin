@@ -31,6 +31,11 @@ public class DetectorTest extends PlatformDetector
 		String[] as;
 		String str;
 		
+		as = ProtocJarMojo.parseArtifactSpec("com.google.protobuf:protoc:3.0.0", "windows-x86_64");
+		str = Arrays.asList(as).toString();
+		log(str);
+		assertEquals("[com.google.protobuf, protoc, 3.0.0, exe, windows-x86_64]", str);
+		
 		as = ProtocJarMojo.parseArtifactSpec("io.grpc:protoc-gen-grpc-java:1.0.1", "windows-x86_64");
 		str = Arrays.asList(as).toString();
 		log(str);
