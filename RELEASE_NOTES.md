@@ -1,6 +1,13 @@
 protoc-jar-maven-plugin release notes
 =====================================
 
+#### 3.11.4 (7-Mar-2020)
+* Upgrade to protoc 3.11.4
+* Preserve native plugin artifact extension (issue #89)
+* Expose option "includeImports" (only applies to type "descriptor") (issue #88)
+* Shading fix for version 3.11.1 or higher (protoc-jar issue #78)
+* Improve log output when using default maven settings (protoc-jar issue #77)
+
 #### 3.11.1 (10-Dec-2019)
 * Upgrade to protoc 3.11.1
 * Support using .proto files in dependencies that aren't packaged (issue #79)
