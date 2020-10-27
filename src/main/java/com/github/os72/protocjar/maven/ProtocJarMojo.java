@@ -224,7 +224,7 @@ public class ProtocJarMojo extends AbstractMojo
 
 	/**
 	 * This parameter lets you specify multiple protoc output targets.
-	 * OutputTarget parameters: "type", "addSources", "cleanOutputFolder", "outputDirectory", "outputDirectorySuffix", "outputOptions", "pluginPath", "pluginArtifact".
+	 * OutputTarget parameters: "type", "addSources", "cleanOutputFolder", "outputDirectory", "outputDirectorySuffix", "outputOptions", "additionalParameters", "pluginPath", "pluginArtifact".
 	 * Type options: "java", "cpp", "python", "descriptor" (default: "java"); for proto3 also: "javanano", "csharp", "objc", "ruby", "js"
 	 * 
 	 * <pre>
@@ -234,6 +234,9 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 		<type>java</type>
 	 * 		<addSources>none</addSources>
 	 * 		<outputDirectory>src/main/java</outputDirectory>
+	 * 		<additionalParameters>
+	 * 			<additionalParameter>--experimental_allow_proto3_optional</additionalParameter>
+	 * 		</additionalParameters>
 	 * 	</outputTarget>
 	 * 	<outputTarget>
 	 * 		<type>grpc-java</type>
@@ -259,6 +262,13 @@ public class ProtocJarMojo extends AbstractMojo
 	 * @parameter property="outputTargets"
 	 */
 	private OutputTarget[] outputTargets;
+
+    /**
+     * Additional compiler arguments.
+     *
+     * @parameter property="additionalArguments"
+     */
+    private List<String> additionalArguments;
 
 	/**
 	 * Default extension for protobuf files
@@ -332,6 +342,7 @@ public class ProtocJarMojo extends AbstractMojo
 			target.outputDirectory = outputDirectory;
 			target.outputDirectorySuffix = outputDirectorySuffix;
 			target.outputOptions = outputOptions;
+			target.additionalArguments = additionalArguments;
 			outputTargets = new OutputTarget[] {target};
 		}
 
@@ -353,6 +364,14 @@ public class ProtocJarMojo extends AbstractMojo
 			String[] outputFiles = target.outputDirectory.list();
 			if (outputFiles == null || outputFiles.length == 0) {
 				missingOutputDirectory = true;
+			}
+
+			if (additionalArguments != null) {
+				if (target.additionalArguments == null) {
+					target.additionalArguments = additionalArguments;
+				} else {
+					target.additionalArguments.addAll(additionalArguments);
+				}
 			}
 		}
 		
@@ -619,7 +638,7 @@ public class ProtocJarMojo extends AbstractMojo
 				Collection<File> protoFiles = FileUtils.listFiles(input, fileFilter, TrueFileFilter.INSTANCE);
 				for (File protoFile : protoFiles) {
 					if (target.cleanOutputFolder || buildContext.hasDelta(protoFile.getPath())) {
-						processFile(protoFile, protocVersion, targetType, target.pluginPath, target.outputDirectory, target.outputOptions);
+						processFile(protoFile, protocVersion, targetType, target.pluginPath, target.outputDirectory, target.outputOptions, target.additionalArguments);
 					}
 					else {
 						getLog().info("Not changed " + protoFile);
@@ -660,7 +679,7 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private void processFile(File file, String version, String type, String pluginPath, File outputDir, String outputOptions) throws MojoExecutionException {
+	private void processFile(File file, String version, String type, String pluginPath, File outputDir, String outputOptions, List<String> additionalArguments) throws MojoExecutionException {
 		getLog().info("    Processing ("+ type + "): " + file.getName());
 
 		try {
@@ -671,7 +690,7 @@ public class ProtocJarMojo extends AbstractMojo
 			TeeOutputStream errTee = new TeeOutputStream(System.err, err);
 			
 			int ret = 0;
-			Collection<String> cmd = buildCommand(file, version, type, pluginPath, outputDir, outputOptions);
+			Collection<String> cmd = buildCommand(file, version, type, pluginPath, outputDir, outputOptions, additionalArguments);
 			if (protocCommand == null) ret = Protoc.runProtoc(cmd.toArray(new String[0]), outTee, errTee);
 			else ret = Protoc.runProtoc(protocCommand, Arrays.asList(cmd.toArray(new String[0])), outTee, errTee);
 			
@@ -711,7 +730,7 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private Collection<String> buildCommand(File file, String version, String type, String pluginPath, File outputDir, String outputOptions) throws MojoExecutionException {
+	private Collection<String> buildCommand(File file, String version, String type, String pluginPath, File outputDir, String outputOptions, List<String> additionalArguments) throws MojoExecutionException {
 		Collection<String> cmd = new ArrayList<String>();
 		populateIncludes(cmd);
 		cmd.add("-I" + file.getParentFile().getAbsolutePath());
@@ -738,6 +757,9 @@ public class ProtocJarMojo extends AbstractMojo
 				cmd.add("--plugin=protoc-gen-" + type + "=" + pluginPath);
 			}
 		}
+        if (additionalArguments != null) {
+          cmd.addAll(additionalArguments);
+        }
 		cmd.add(file.toString());
 		if (version != null) cmd.add("-v" + version);
 		return cmd;
