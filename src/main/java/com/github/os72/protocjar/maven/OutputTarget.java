@@ -16,6 +16,7 @@
 package com.github.os72.protocjar.maven;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Specifies output target
@@ -100,7 +101,14 @@ public class OutputTarget
      */
 	String outputOptions;
 
+	/**
+	 * Additional compiler arguments.
+	 *
+	 * @parameter property="additionalArguments"
+	 */
+	List<String> additionalArguments;
+
 	public String toString() {
-		return type + ": " + outputDirectory + " (add: " + addSources + ", clean: " + cleanOutputFolder + ", plugin: " + pluginPath + ", outputOptions: " + outputOptions + ")";
+		return type + ": " + outputDirectory + " (add: " + addSources + ", clean: " + cleanOutputFolder + ", plugin: " + pluginPath + ", outputOptions: " + outputOptions + ", additionalArguments: " + additionalArguments + ")";
 	}
 }
