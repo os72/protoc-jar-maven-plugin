@@ -158,6 +158,15 @@ public class ProtocJarMojo extends AbstractMojo
 	private boolean includeImports;
 
 	/**
+	 * Specifies whether to enable [experimental] proto3 optional feature.
+	 * Options: "true", "false" (default: "false")
+	 * <p>
+	 *
+	 * @parameter property="proto3Optional" default-value="false"
+	 */
+	private boolean proto3Optional;
+
+	/**
 	 * If this parameter is set to "true" output folder is cleaned prior to the
 	 * build. This will not let old and new classes coexist after package or
 	 * class rename in your IDE cache or after non-clean rebuild. Set this to
@@ -731,6 +740,10 @@ public class ProtocJarMojo extends AbstractMojo
 			}
 			else {
 				cmd.add("--" + type + "_out=" + outputDir);
+			}
+
+			if (proto3Optional) {
+				cmd.add("--experimental_allow_proto3_optional");
 			}
 
 			if (pluginPath != null) {
