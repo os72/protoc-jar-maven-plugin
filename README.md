@@ -39,7 +39,7 @@ Binaries
 
 Documentation: see http://os72.github.io/protoc-jar-maven-plugin/, in particular [run-mojo](http://os72.github.io/protoc-jar-maven-plugin/run-mojo.html)
 
-Sample usage - compile in main cycle into `target/generated-sources`, add generated sources to project, use default `protoc` version and default `src/main/protobuf` source folder:
+Sample usage - compile in main cycle into `target/generated-sources/protobuf`, add generated sources to project, use default `protoc` version and default `src/main/protobuf` source folder:
 ```xml
 <plugin>
 	<groupId>com.github.os72</groupId>
@@ -56,7 +56,7 @@ Sample usage - compile in main cycle into `target/generated-sources`, add genera
 </plugin>
 ```
 
-Sample usage - compile in main cycle into `target/generated-sources`, add generated sources to project, add all .proto sources to generated jar, include .proto files from direct maven dependencies, include additional imports:
+Sample usage - compile in main cycle into `target/generated-sources/protobuf`, add generated sources to project, add all .proto sources to generated jar, include .proto files from direct maven dependencies, include additional imports:
 ```xml
 <plugin>
 	<groupId>com.github.os72</groupId>
