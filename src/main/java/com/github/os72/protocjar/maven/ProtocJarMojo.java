@@ -202,7 +202,8 @@ public class ProtocJarMojo extends AbstractMojo
 	private File outputDirectory;
 
 	/**
-	 * If this parameter is set, append its value to the {@link #outputDirectory} path
+	 * If this parameter is set, append its value to the {@link #outputDirectory} path. Defaults to "protobuf".
+	 *
 	 * For example, value "protobuf" will set output directory to
 	 * "${project.build.directory}/generated-sources/protobuf" or
 	 * "${project.build.directory}/generated-test-sources/protobuf"
@@ -345,11 +346,12 @@ public class ProtocJarMojo extends AbstractMojo
 				String subdir = "generated-" + ("test".equals(target.addSources) ? "test-" : "") + "sources";
 				target.outputDirectory = new File(project.getBuild().getDirectory() + File.separator + subdir + File.separator);
 			}
-			
-			if (target.outputDirectorySuffix != null) {
-				target.outputDirectory = new File(target.outputDirectory, target.outputDirectorySuffix);
+
+			if (target.outputDirectorySuffix == null) {
+				target.outputDirectorySuffix = "protobuf";
 			}
-			
+
+			target.outputDirectory = new File(target.outputDirectory, target.outputDirectorySuffix);
 			String[] outputFiles = target.outputDirectory.list();
 			if (outputFiles == null || outputFiles.length == 0) {
 				missingOutputDirectory = true;
