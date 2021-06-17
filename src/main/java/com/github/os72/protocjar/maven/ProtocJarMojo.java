@@ -171,6 +171,15 @@ public class ProtocJarMojo extends AbstractMojo
 	private boolean cleanOutputFolder;
 
 	/**
+	 * If this value is set to true, Maven projects with the packaging type POM will be exempted from the plugin run.
+	 *
+	 * Set this to false if you're using a monorepo and need to execute non-Java code generation in the parent project(s) as well.
+	 *
+	 * @parameter property="ignorePomPackaging" default-value="true"
+	 */
+	private boolean ignorePomPackaging;
+
+	/**
 	 * Path to the protoc plugin that generates code for the specified {@link #type}.
 	 * <p>
 	 * Ignored when {@code <outputTargets>} is given
@@ -317,11 +326,15 @@ public class ProtocJarMojo extends AbstractMojo
 	private File tempRoot = null;
 
 	public void execute() throws MojoExecutionException {
-		if (project.getPackaging() != null && "pom".equals(project.getPackaging().toLowerCase())) {
-			getLog().info("Skipping 'pom' packaged project");
-			return;
+		if (ignorePomPackaging){
+			if (project.getPackaging() != null && "pom".equals(project.getPackaging().toLowerCase())) {
+				getLog().info("Skipping 'pom' packaged project");
+				return;
+			}
+		} else {
+			getLog().info("'pom' skipping is suppressed at the user's request...");
 		}
-		
+
 		if (outputTargets == null || outputTargets.length == 0) {
 			OutputTarget target = new OutputTarget();
 			target.type = type;
