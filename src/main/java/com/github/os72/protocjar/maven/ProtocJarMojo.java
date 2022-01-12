@@ -381,7 +381,7 @@ public class ProtocJarMojo extends AbstractMojo
 	}
 
 	private void performProtoCompilation(boolean doCodegen) throws MojoExecutionException {
-		if (doCodegen) prepareProtoc();
+		if (doCodegen || includeStdTypes) prepareProtoc();
 		
 		// even if doCodegen == false, we still extract extra includes/inputs because addProtoSources might be requested
 		// this could be optimized further
