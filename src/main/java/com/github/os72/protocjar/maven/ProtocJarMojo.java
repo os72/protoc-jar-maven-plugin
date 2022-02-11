@@ -617,13 +617,24 @@ public class ProtocJarMojo extends AbstractMojo
 			
 			if (input.exists() && input.isDirectory()) {
 				Collection<File> protoFiles = FileUtils.listFiles(input, fileFilter, TrueFileFilter.INSTANCE);
-				for (File protoFile : protoFiles) {
-					if (target.cleanOutputFolder || buildContext.hasDelta(protoFile.getPath())) {
-						processFile(protoFile, protocVersion, targetType, target.pluginPath, target.outputDirectory, target.outputOptions);
+
+				boolean changed = target.cleanOutputFolder;
+
+				if (!changed) {
+					for (File protoFile : protoFiles) {
+						if (buildContext.hasDelta(protoFile.getPath())) {
+							changed = true;
+							break;
+						}
 					}
-					else {
-						getLog().info("Not changed " + protoFile);
-					}
+				}
+
+				if (changed) {
+					processFile(input, protoFiles, protocVersion, targetType, target.pluginPath,
+							target.outputDirectory, target.outputOptions);
+				}
+				else {
+						getLog().info("Not changed " + input);
 				}
 			}
 			else {
@@ -660,18 +671,18 @@ public class ProtocJarMojo extends AbstractMojo
 		}
 	}
 
-	private void processFile(File file, String version, String type, String pluginPath, File outputDir, String outputOptions) throws MojoExecutionException {
-		getLog().info("    Processing ("+ type + "): " + file.getName());
+	private void processFile(File inputDir, Collection<File> files, String version, String type, String pluginPath, File outputDir, String outputOptions) throws MojoExecutionException {
+		getLog().info("    Processing ("+ type + "): " + inputDir);
 
 		try {
-			buildContext.removeMessages(file);
+			buildContext.removeMessages(inputDir);
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			ByteArrayOutputStream err = new ByteArrayOutputStream();
 			TeeOutputStream outTee = new TeeOutputStream(System.out, out);
 			TeeOutputStream errTee = new TeeOutputStream(System.err, err);
 			
 			int ret = 0;
-			Collection<String> cmd = buildCommand(file, version, type, pluginPath, outputDir, outputOptions);
+			Collection<String> cmd = buildCommand(inputDir, files, version, type, pluginPath, outputDir, outputOptions);
 			if (protocCommand == null) ret = Protoc.runProtoc(cmd.toArray(new String[0]), outTee, errTee);
 			else ret = Protoc.runProtoc(protocCommand, Arrays.asList(cmd.toArray(new String[0])), outTee, errTee);
 			
@@ -684,7 +695,7 @@ public class ProtocJarMojo extends AbstractMojo
 					int lineNum = 0;
 					int colNum = 0;
 					String msg = line;
-					if (line.contains(file.getName())) {
+					if (line.contains(inputDir.getName())) {
 						String[] parts = line.split(":", 4);
 						if (parts.length == 4) {
 							try {
@@ -693,30 +704,30 @@ public class ProtocJarMojo extends AbstractMojo
 								msg = parts[3];
 							}
 							catch (Exception e) {
-								getLog().warn("Failed to parse protoc warning/error for " + file);
+								getLog().warn("Failed to parse protoc warning/error for " + inputDir);
 							}
 						}
 					}
-					buildContext.addMessage(file, lineNum, colNum, msg, severity, null);
+					buildContext.addMessage(inputDir, lineNum, colNum, msg, severity, null);
 				}
 			}
 			
-			if (ret != 0) throw new MojoExecutionException("protoc-jar failed for " + file + ". Exit code " + ret);
+			if (ret != 0) throw new MojoExecutionException("protoc-jar failed for " + inputDir +  ". Exit code " + ret);
 		}
 		catch (InterruptedException e) {
 			throw new MojoExecutionException("Interrupted", e);
 		}
 		catch (IOException e) {
-			throw new MojoExecutionException("Unable to execute protoc-jar for " + file, e);
+			throw new MojoExecutionException("Unable to execute protoc-jar for " + inputDir, e);
 		}
 	}
 
-	private Collection<String> buildCommand(File file, String version, String type, String pluginPath, File outputDir, String outputOptions) throws MojoExecutionException {
+	private Collection<String> buildCommand(File inputDir, Collection<File> files, String version, String type, String pluginPath, File outputDir, String outputOptions) throws MojoExecutionException {
 		Collection<String> cmd = new ArrayList<String>();
 		populateIncludes(cmd);
-		cmd.add("-I" + file.getParentFile().getAbsolutePath());
+		cmd.add("-I" + inputDir);
 		if ("descriptor".equals(type)) {
-			File outFile = new File(outputDir, file.getName());
+			File outFile = new File(outputDir, inputDir.getName());
 			cmd.add("--descriptor_set_out=" + FilenameUtils.removeExtension(outFile.toString()) + ".desc");
 			if (includeImports) {
 				cmd.add("--include_imports");
@@ -738,7 +749,10 @@ public class ProtocJarMojo extends AbstractMojo
 				cmd.add("--plugin=protoc-gen-" + type + "=" + pluginPath);
 			}
 		}
-		cmd.add(file.toString());
+
+		for (File file : files) {
+			cmd.add(file.toString());
+		}
 		if (version != null) cmd.add("-v" + version);
 		return cmd;
 	}
