@@ -40,14 +40,18 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.repository.RepositorySystem;
+import org.eclipse.sisu.Parameters;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.github.os72.protocjar.PlatformDetector;
@@ -61,6 +65,7 @@ import com.github.os72.protocjar.ProtocVersion;
  * @phase generate-sources
  * @requiresDependencyResolution
  */
+@Mojo(name = "codegen")
 public class ProtocJarMojo extends AbstractMojo
 {
 	private static final String DEFAULT_INPUT_DIR = "/src/main/protobuf/".replace('/', File.separatorChar);
@@ -70,6 +75,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="protocVersion"
 	 */
+	@Parameter(property = "protocVersion", defaultValue = "")
 	private String protocVersion;
 
 	/**
@@ -77,6 +83,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="optimizeCodegen" default-value="true"
 	 */
+	@Parameter(property="optimizeCodegen", defaultValue="true")
 	private boolean optimizeCodegen;
 
 	/**
@@ -85,6 +92,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="inputDirectories"
 	 */
+	@Parameter(property = "inputDirectories")
 	private File[] inputDirectories;
 
 	/**
@@ -92,6 +100,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="includeDirectories"
 	 */
+	@Parameter(property = "includeDirectories")
 	private File[] includeDirectories;
 
 	/**
@@ -99,6 +108,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="includeStdTypes" default-value="false"
 	 */
+	@Parameter(property="includeStdTypes", defaultValue = "false")
 	private boolean includeStdTypes;
 
 	/**
@@ -108,6 +118,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 *
 	 * @parameter property="includeMavenTypes" default-value="none"
 	 */
+	@Parameter(property="includeMavenTypes", defaultValue="none")
 	private String includeMavenTypes;
 
 	/**
@@ -117,6 +128,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 *
 	 * @parameter property="compileMavenTypes" default-value="none"
 	 */
+	@Parameter(property="compileMavenTypes", defaultValue="none")
 	private String compileMavenTypes;
 
 	/**
@@ -125,6 +137,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="addProtoSources" default-value="none"
 	 */
+	@Parameter(property="addProtoSources", defaultValue="none")
 	private String addProtoSources;
 
 	/**
@@ -308,7 +321,7 @@ public class ProtocJarMojo extends AbstractMojo
 	/** @component */
 	private BuildContext buildContext;
 	/** @component */
-	private ArtifactFactory artifactFactory;
+	private RepositorySystem artifactFactory;
 	/** @component */
 	private ArtifactResolver artifactResolver;
 	/** @component */
@@ -759,7 +772,8 @@ public class ProtocJarMojo extends AbstractMojo
 			
 			getLog().info("Resolving artifact: " + artifactSpec + ", platform: " + platform);
 			String[] as = parseArtifactSpec(artifactSpec, platform);
-			Artifact artifact = artifactFactory.createDependencyArtifact(as[0], as[1], VersionRange.createFromVersionSpec(as[2]), as[3], as[4], Artifact.SCOPE_RUNTIME);
+			Artifact artifact = artifactFactory.createArtifactWithClassifier(as[0], as[1], as[2], as[3], as[4]);
+//			Artifact artifact = artifactFactory.createDependencyArtifact(as[0], as[1], VersionRange.createFromVersionSpec(as[2]), as[3], as[4], Artifact.SCOPE_RUNTIME);
 			artifactResolver.resolve(artifact, remoteRepositories, localRepository);
 			
 			File tempFile = File.createTempFile(as[1], "."+as[3], dir);
