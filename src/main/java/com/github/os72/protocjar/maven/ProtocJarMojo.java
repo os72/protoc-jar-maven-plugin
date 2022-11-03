@@ -59,13 +59,8 @@ import com.github.os72.protocjar.Protoc;
 import com.github.os72.protocjar.ProtocVersion;
 
 /**
- * Compiles .proto files using protoc-jar embedded protoc compiler. Also supports pre-installed protoc binary, and downloading binaries (protoc and protoc plugins) from maven repo
- * 
- * @goal run
- * @phase generate-sources
- * @requiresDependencyResolution
  */
-@Mojo(name = "codegen")
+@Mojo(name = "run")
 public class ProtocJarMojo extends AbstractMojo
 {
 	private static final String DEFAULT_INPUT_DIR = "/src/main/protobuf/".replace('/', File.separatorChar);
@@ -148,6 +143,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="type" default-value="java"
 	 */
+	@Parameter(property="type", defaultValue="none")
 	private String type;
 
 	/**
@@ -158,6 +154,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="addSources" default-value="main"
 	 */
+	@Parameter(property="addSources", defaultValue="none")
 	private String addSources;
 
 	/**
@@ -168,6 +165,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 *
 	 * @parameter property="includeImports" default-value="true"
 	 */
+	@Parameter(property="includeImports", defaultValue="none")
 	private boolean includeImports;
 
 	/**
@@ -181,6 +179,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="cleanOutputFolder" default-value="false"
 	 */
+	@Parameter(property="cleanOutputFolder", defaultValue="none")
 	private boolean cleanOutputFolder;
 
 	/**
@@ -190,6 +189,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 *
 	 * @parameter property="pluginPath"
 	 */
+	@Parameter(property="pluginPath", defaultValue="none")
 	private String pluginPath;
 
 	/**
@@ -200,6 +200,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 *
 	 * @parameter property="pluginArtifact"
 	 */
+	@Parameter(property="pluginArtifact", defaultValue="none")
 	private String pluginArtifact;
 
 	/**
@@ -212,6 +213,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="outputDirectory"
 	 */
+	@Parameter(property="outputDirectory", defaultValue="none")
 	private File outputDirectory;
 
 	/**
@@ -224,6 +226,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 *
 	 * @parameter property="outputDirectorySuffix"
 	 */
+	@Parameter(property="outputDirectorySuffix", defaultValue="none")
 	private String outputDirectorySuffix;
 
 	/**
@@ -233,6 +236,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 *
 	 * @parameter property="outputOptions"
 	 */
+	@Parameter(property="outputOptions", defaultValue="none")
 	private String outputOptions;
 
 	/**
@@ -271,6 +275,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="outputTargets"
 	 */
+	@Parameter(property="outputTargets", defaultValue="none")
 	private OutputTarget[] outputTargets;
 
 	/**
@@ -278,6 +283,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="extension" default-value=".proto"
 	 */
+	@Parameter(property="extension", defaultValue="none")
 	private String extension;
 
 	/**
@@ -285,6 +291,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * 
 	 * @parameter property="protocCommand"
 	 */
+	@Parameter(property="protocCommand", defaultValue="none")
 	private String protocCommand;
 
 	/**
@@ -293,6 +300,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 *
 	 * @parameter property="protocArtifact"
 	 */
+	@Parameter(property="protocArtifacts", defaultValue="none")
 	private String protocArtifact;
 
 	/**
@@ -302,6 +310,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * @readonly
 	 * @required
 	 */
+	@Parameter(property="project", defaultValue="none")
 	private MavenProject project;
 
 	/** 
@@ -309,6 +318,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * @readonly
 	 * @required
 	 */
+	@Parameter(property="localRepository", defaultValue="none")
 	private ArtifactRepository localRepository;
 
 	/** 
@@ -316,6 +326,7 @@ public class ProtocJarMojo extends AbstractMojo
 	 * @readonly
 	 * @required
 	 */
+	@Parameter(property="remoteRepositories", defaultValue="none")
 	private List<ArtifactRepository> remoteRepositories;
 
 	/** @component */
