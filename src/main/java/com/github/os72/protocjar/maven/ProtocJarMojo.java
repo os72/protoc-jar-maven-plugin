@@ -292,11 +292,11 @@ public class ProtocJarMojo extends AbstractMojo
 	private MavenProject project;
 
 	/** 
-	 * @parameter default-value="${localRepository}" 
+	 * @parameter default-value="${repositorySystemSession}" 
 	 * @readonly
 	 * @required
 	 */
-	private ArtifactRepository localRepository;
+	private ArtifactRepository repositorySystemSession;
 
 	/** 
 	 * @parameter default-value="${project.remoteArtifactRepositories}" 
@@ -760,7 +760,7 @@ public class ProtocJarMojo extends AbstractMojo
 			getLog().info("Resolving artifact: " + artifactSpec + ", platform: " + platform);
 			String[] as = parseArtifactSpec(artifactSpec, platform);
 			Artifact artifact = artifactFactory.createDependencyArtifact(as[0], as[1], VersionRange.createFromVersionSpec(as[2]), as[3], as[4], Artifact.SCOPE_RUNTIME);
-			artifactResolver.resolve(artifact, remoteRepositories, localRepository);
+			artifactResolver.resolve(artifact, remoteRepositories, repositorySystemSession);
 			
 			File tempFile = File.createTempFile(as[1], "."+as[3], dir);
 			copyFile(artifact.getFile(), tempFile);
